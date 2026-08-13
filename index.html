@@ -1,0 +1,448 @@
+<title>사장님, 숨은 정책자금부터 무료로 확인해보세요</title>
+<style>
+  :root {
+    --paper: #f5f0e4;
+    --paper-raise: #fbf8f0;
+    --ink: #1f3b2e;
+    --ink-soft: #4b6358;
+    --ink-faint: #7c8f81;
+    --line: #ddd5c0;
+    --line-strong: #c7bd9f;
+    --accent: #e8642b;
+    --accent-dark: #c94f1c;
+    --accent-soft: #fbdcc7;
+    --card: #ffffff;
+    --dark: #16281f;
+    --dark-raise: #1e352a;
+    --shadow: 0 2px 6px rgba(31,59,46,0.07), 0 14px 32px -18px rgba(31,59,46,0.22);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper: #12160f;
+      --paper-raise: #171c14;
+      --ink: #ede8da;
+      --ink-soft: #a8b3a6;
+      --ink-faint: #6d7a6c;
+      --line: #2a2f26;
+      --line-strong: #3a4034;
+      --accent: #ff7a3d;
+      --accent-dark: #ff8f5c;
+      --accent-soft: #3a2416;
+      --card: #1a1f17;
+      --dark: #0b120d;
+      --dark-raise: #131c15;
+      --shadow: 0 2px 6px rgba(0,0,0,0.35), 0 14px 32px -18px rgba(0,0,0,0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #12160f;
+    --paper-raise: #171c14;
+    --ink: #ede8da;
+    --ink-soft: #a8b3a6;
+    --ink-faint: #6d7a6c;
+    --line: #2a2f26;
+    --line-strong: #3a4034;
+    --accent: #ff7a3d;
+    --accent-dark: #ff8f5c;
+    --accent-soft: #3a2416;
+    --card: #1a1f17;
+    --dark: #0b120d;
+    --dark-raise: #131c15;
+    --shadow: 0 2px 6px rgba(0,0,0,0.35), 0 14px 32px -18px rgba(0,0,0,0.6);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 74px; /* space for sticky bar */
+  }
+  .mono { font-family: ui-monospace, 'SFMono-Regular', Consolas, monospace; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: 0 22px; }
+  a { color: inherit; }
+  img, svg { max-width: 100%; }
+
+  /* ---- Nav ---- */
+  nav {
+    position: sticky; top: 0; z-index: 40;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; max-width: 640px; margin: 0 auto; }
+  .nav-brand { font-weight: 800; font-size: 14.5px; }
+  .nav-links { display: none; gap: 18px; font-size: 13.5px; color: var(--ink-soft); }
+  .nav-cta {
+    font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; font-weight: 700;
+    background: var(--accent); color: #fff9f2; padding: 8px 14px; border-radius: 999px; text-decoration: none;
+  }
+  @media (min-width: 640px) { .nav-links { display: flex; } }
+
+  /* ---- CTA button ---- */
+  .cta-btn {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--accent); color: #fff9f2;
+    font-weight: 800; font-size: 16.5px;
+    padding: 16px 20px; border-radius: 14px;
+    text-decoration: none;
+    box-shadow: 0 10px 24px -10px rgba(232,100,43,0.55);
+    border: none; width: 100%;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .cta-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 28px -10px rgba(232,100,43,0.6); }
+  .cta-btn:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 3px; }
+  .cta-sub { text-align: center; font-size: 12.5px; color: var(--ink-faint); margin-top: 10px; }
+  .cta-btn.outline { background: transparent; color: var(--paper); border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); box-shadow: none; }
+
+  /* ---- Hero (dark, personal brand) ---- */
+  .hero { background: var(--dark); color: var(--paper); padding: 48px 0 40px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: 0.06em;
+    background: var(--dark-raise); border: 1px solid color-mix(in srgb, var(--paper) 16%, transparent);
+    color: color-mix(in srgb, var(--paper) 75%, transparent);
+    padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
+  }
+  .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .hero-name { font-size: 15px; font-weight: 700; color: color-mix(in srgb, var(--paper) 70%, transparent); margin-bottom: 6px; }
+  h1 {
+    font-size: clamp(28px, 7.5vw, 38px);
+    font-weight: 900; letter-spacing: -0.02em; line-height: 1.32;
+    margin: 0 0 16px; text-wrap: balance; color: var(--paper);
+  }
+  h1 .accent-word { color: var(--accent); }
+  .hero-sub { font-size: 16px; color: color-mix(in srgb, var(--paper) 72%, transparent); max-width: 42ch; margin: 0 0 26px; }
+  .hero-checks { list-style: none; margin: 0 0 28px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .hero-checks li { display: flex; gap: 9px; font-size: 14.5px; color: color-mix(in srgb, var(--paper) 88%, transparent); }
+  .hero-checks .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+  .hero-cta-row { display: flex; flex-direction: column; gap: 10px; }
+
+  /* ---- Notice box ---- */
+  .notice {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 4px 14px 14px 4px; padding: 18px 22px; box-shadow: var(--shadow);
+  }
+  .notice-title { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: 0.1em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
+  .notice p { margin: 0 0 8px; font-size: 14px; color: var(--ink-soft); }
+  .notice p:last-child { margin-bottom: 0; }
+  .notice b { color: var(--ink); }
+
+  /* ---- Sections ---- */
+  section { padding: 46px 0; border-top: 1px solid var(--line); }
+  .eyebrow {
+    font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: 0.1em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 10px; text-align: center;
+  }
+  h2 { font-size: 24px; font-weight: 800; text-align: center; margin: 0 0 32px; letter-spacing: -0.01em; text-wrap: balance; }
+
+  /* ---- Pain points ---- */
+  .pain-list { display: flex; flex-direction: column; gap: 12px; }
+  .pain-item {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; box-shadow: var(--shadow);
+  }
+  .pain-item .mark { font-size: 20px; flex-shrink: 0; line-height: 1.3; }
+  .pain-item p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+  .pain-item b { color: var(--ink); }
+
+  /* ---- Diagnosis section ---- */
+  .diagnosis { background: var(--paper-raise); }
+  .diag-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+  .diag-step {
+    display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 18px; box-shadow: var(--shadow);
+  }
+  .diag-step .n {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0;
+    font-family: ui-monospace, Consolas, monospace;
+  }
+  .diag-step .t { font-weight: 700; font-size: 14.5px; }
+  .diag-step .d { font-size: 12.5px; color: var(--ink-faint); }
+  .diag-give {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow);
+  }
+  .diag-give-title { font-weight: 800; font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .diag-give ul { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+  .diag-give li { display: flex; gap: 9px; font-size: 14px; color: var(--ink-soft); }
+  .diag-give .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+
+  /* ---- Flow ---- */
+  .flow-list { display: flex; flex-direction: column; gap: 0; }
+  .flow-item { display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 18px 0; }
+  .flow-item:not(:last-child) { border-bottom: 1px dashed var(--line-strong); }
+  .flow-num {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-dark);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: ui-monospace, Consolas, monospace;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .flow-title { font-weight: 700; font-size: 15.5px; margin-bottom: 3px; }
+  .flow-desc { font-size: 13.5px; color: var(--ink-soft); }
+
+  /* ---- Trust grid ---- */
+  .trust-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .trust-item {
+    background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--ink);
+    border-radius: 10px; padding: 14px 18px; font-size: 14px;
+  }
+  .trust-item b { display: block; font-size: 14.5px; margin-bottom: 3px; }
+  .trust-item span { color: var(--ink-soft); font-size: 13px; }
+
+  /* ---- Eligibility checklist ---- */
+  .check-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .check-list li {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px;
+    background: var(--paper-raise); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px;
+  }
+  .check-list .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+
+  /* ---- FAQ ---- */
+  .faq-item { border-bottom: 1px solid var(--line); padding: 18px 0; }
+  .faq-item:first-child { padding-top: 0; }
+  .faq-q { font-weight: 700; font-size: 15px; margin-bottom: 8px; display: flex; gap: 10px; }
+  .faq-q .qmark { color: var(--accent); flex-shrink: 0; }
+  .faq-a { font-size: 14px; color: var(--ink-soft); padding-left: 24px; }
+
+  /* ---- Final CTA ---- */
+  .final-cta { text-align: center; padding: 52px 0 64px; }
+  .final-cta h2 { margin-bottom: 12px; }
+  .final-cta p { color: var(--ink-soft); font-size: 14.5px; margin: 0 0 26px; }
+
+  footer {
+    background: var(--paper-raise); border-top: 1px solid var(--line);
+    padding: 28px 0 40px; font-size: 12px; color: var(--ink-faint); text-align: center;
+  }
+  footer .biz-name { font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
+
+  /* ---- Statement block (dark contrast) ---- */
+  .statement { background: var(--ink); color: var(--paper); padding: 52px 0; }
+  .statement .eyebrow { color: var(--accent); }
+  .statement h2 { color: var(--paper); }
+  .statement-lines { text-align: center; margin: 0 0 30px; }
+  .statement-lines p { font-size: 19px; font-weight: 800; margin: 0 0 6px; line-height: 1.5; text-wrap: balance; }
+  .statement-lines .dim { color: color-mix(in srgb, var(--paper) 60%, transparent); font-weight: 600; font-size: 15px; }
+  .statement-lines .pop { color: var(--accent); }
+  .statement-checks { display: flex; flex-direction: column; gap: 10px; max-width: 440px; margin: 0 auto; }
+  .statement-checks li {
+    list-style: none; display: flex; gap: 10px; font-size: 14.5px;
+    background: color-mix(in srgb, var(--paper) 8%, transparent);
+    border: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
+    border-radius: 10px; padding: 12px 16px;
+  }
+  .statement-checks .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+
+  /* ---- Honest-new banner ---- */
+  .honest-box {
+    background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+    border-radius: 14px; padding: 20px 22px; text-align: center;
+  }
+  .honest-box b { display: block; font-size: 15.5px; margin-bottom: 6px; }
+  .honest-box p { margin: 0; font-size: 13.5px; color: var(--ink-soft); }
+
+  /* ---- Prep note before chat ---- */
+  .prep-box {
+    background: var(--paper-raise); border: 1px dashed var(--line-strong); border-radius: 12px;
+    padding: 16px 20px; font-size: 13.5px; color: var(--ink-soft); margin-top: 16px;
+  }
+  .prep-box b { color: var(--ink); }
+
+  /* ---- Sticky bottom bar ---- */
+  .sticky-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--card); border-top: 1px solid var(--line);
+    padding: 10px 16px; box-shadow: 0 -8px 20px -12px rgba(0,0,0,0.25);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .sticky-bar .txt { flex: 1; min-width: 0; }
+  .sticky-bar .txt b { display: block; font-size: 13px; }
+  .sticky-bar .txt span { display: block; font-size: 11.5px; color: var(--ink-faint); }
+  .sticky-bar .cta-btn { width: auto; padding: 11px 18px; font-size: 14px; border-radius: 10px; white-space: nowrap; }
+
+  @media (min-width: 640px) {
+    .hero-cta-row { flex-direction: row; }
+    .hero-cta-row .cta-btn { width: auto; flex: 1; }
+  }
+  @media (min-width: 720px) {
+    h1 { font-size: 44px; }
+  }
+</style>
+
+<nav>
+  <div class="nav-row">
+    <div class="nav-brand">한국사업자성장지원센터</div>
+    <div class="nav-links">
+      <a href="#about">소개</a>
+      <a href="#diagnosis">무료진단</a>
+      <a href="#service">진행방식</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="nav-cta kakao-cta" href="#">상담 신청</a>
+  </div>
+</nav>
+
+<div class="hero" id="about">
+  <div class="wrap">
+    <div class="hero-badge"><span class="dot"></span>소상공인 · 중소기업 정책자금 무료 진단</div>
+    <div class="hero-name">한국사업자성장지원센터 · 정책자금 상담</div>
+    <h1>사장님이 놓치고 있는<br><span class="accent-word">숨은 자금</span>, 먼저 확인해보세요</h1>
+    <p class="hero-sub">바쁜 와중에 정책자금까지 알아볼 시간, 없으시죠. 카톡으로 편하게 물어보시면 지금 상황에 맞는 자금을 무료로 찾아드립니다.</p>
+    <ul class="hero-checks">
+      <li><span class="c">✓</span>소상공인부터 중소기업까지</li>
+      <li><span class="c">✓</span>사업 상황에 맞는 맞춤 진단</li>
+      <li><span class="c">✓</span>결과는 무료로, 부담 없이 먼저 확인</li>
+    </ul>
+    <div class="hero-cta-row">
+      <a class="cta-btn kakao-cta" href="#">💬 카톡으로 무료 진단 받기</a>
+    </div>
+    <p class="cta-sub">상담은 무료이며, 원치 않으시면 언제든 대화를 종료하실 수 있어요</p>
+  </div>
+</div>
+
+<section style="padding-top:32px;">
+  <div class="wrap">
+    <div class="notice">
+      <div class="notice-title">NOTICE</div>
+      <p><b>저는 보험을 팔지 않는, 정책자금 상담만 하는 사람입니다.</b></p>
+      <p>정책자금을 이유로 보험이나 다른 금융상품을 권해드리지 않습니다. 신용보증기금·기술보증기금·중소벤처기업진흥공단 등 정부 정책자금 상담에만 집중하고 있어요.</p>
+      <p>궁금하신 점은 언제든 편하게 카톡으로 먼저 물어봐 주세요.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">이런 고민, 있으시죠</div>
+    <h2>사장님만 그런 게 아니에요</h2>
+    <div class="pain-list">
+      <div class="pain-item"><span class="mark">😮‍💨</span><p><b>정책자금이 있는 줄도 몰랐어요.</b> 은행에서 대출이 안 된다고 하면 그냥 포기하게 되죠.</p></div>
+      <div class="pain-item"><span class="mark">📄</span><p><b>서류만 봐도 머리가 아파요.</b> 사업계획서 하나 준비하는 데 반나절이 훌쩍 갑니다.</p></div>
+      <div class="pain-item"><span class="mark">⏰</span><p><b>가게 문 열어야 하는데 언제 알아보나요.</b> 결국 급한 대로 카드론부터 쓰게 되는 경우가 많아요.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="diagnosis" id="diagnosis">
+  <div class="wrap">
+    <div class="eyebrow">FREE DIAGNOSIS</div>
+    <h2>우리 가게, 정책자금 받을 수 있을까요?</h2>
+    <div class="diag-steps">
+      <div class="diag-step"><div class="n">1</div><div><div class="t">카톡으로 간단히 문의</div><div class="d">업종·매출·연차만 알려주셔도 충분해요</div></div></div>
+      <div class="diag-step"><div class="n">2</div><div><div class="t">제가 직접 확인</div><div class="d">지금 가능한 정책자금이 있는지 살펴봅니다</div></div></div>
+      <div class="diag-step"><div class="n">3</div><div><div class="t">결과 안내</div><div class="d">가능성과 다음 단계를 정리해서 알려드려요</div></div></div>
+    </div>
+    <div class="diag-give">
+      <div class="diag-give-title">🎁 이런 내용을 받아보세요</div>
+      <ul>
+        <li><span class="c">✓</span>지금 상황에서 확인 가능한 정책자금 목록</li>
+        <li><span class="c">✓</span>기관별 조건과 대략적인 가능성</li>
+        <li><span class="c">✓</span>준비하면 좋은 서류 안내</li>
+        <li><span class="c">✓</span>혼자 진행할지, 도움을 받을지 판단할 수 있는 정보</li>
+      </ul>
+      <a class="cta-btn kakao-cta" href="#">💬 무료로 확인해보기</a>
+    </div>
+  </div>
+</section>
+
+<div class="statement">
+  <div class="wrap">
+    <div class="eyebrow">먼저 말씀드릴게요</div>
+    <div class="statement-lines">
+      <p>전화로 먼저 영업하는 곳,<br>일단 한번 의심해보세요.</p>
+      <p class="pop">여기는 <span class="mono" style="font-weight:900;">한국사업자성장지원센터</span>가 직접 상담합니다.</p>
+      <p class="dim">중간에 다른 상담원 거치지 않아요.</p>
+    </div>
+    <ul class="statement-checks">
+      <li><span class="c">✓</span>먼저 전화 걸어서 영업하지 않습니다 — 사장님이 먼저 문의주실 때만 시작해요</li>
+      <li><span class="c">✓</span>"100% 승인", "정부 지정 업체" 같은 말 쓰지 않습니다</li>
+      <li><span class="c">✓</span>정책자금을 이유로 보험이나 다른 상품을 끼워팔지 않습니다</li>
+      <li><span class="c">✓</span>질문하신 내용, 상담원 아닌 제가 직접 확인하고 답합니다</li>
+    </ul>
+  </div>
+</div>
+
+<section id="service">
+  <div class="wrap">
+    <div class="eyebrow">이렇게 도와드려요</div>
+    <h2>진행은 이렇게 간단합니다</h2>
+    <div class="flow-list">
+      <div class="flow-item"><div class="flow-num">1</div><div><div class="flow-title">카톡으로 편하게 문의</div><div class="flow-desc">사업 현황을 간단히 말씀해주시면 됩니다. 어려운 용어 몰라도 괜찮아요.</div></div></div>
+      <div class="flow-item"><div class="flow-num">2</div><div><div class="flow-title">무료로 상황 진단</div><div class="flow-desc">지금 받으실 수 있는 자금이 있는지 먼저 확인해드립니다.</div></div></div>
+      <div class="flow-item"><div class="flow-num">3</div><div><div class="flow-title">맞는 자금 안내</div><div class="flow-desc">가능한 자금과 예상 조건을 정리해서 보여드려요. 결정은 사장님 몫입니다.</div></div></div>
+      <div class="flow-item"><div class="flow-num">4</div><div><div class="flow-title">서류 준비 도움</div><div class="flow-desc">진행을 원하시면 서류 작성부터 제출까지 같이 챙겨드립니다.</div></div></div>
+    </div>
+    <div class="prep-box"><b>카톡 보내실 때 이 3가지만 알려주시면 더 빨리 확인해드려요:</b> ① 업종 ② 대략적인 연매출 ③ 창업/운영 연차. 모르셔도 괜찮아요, 대화하면서 같이 확인하면 됩니다.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">먼저 약속드려요</div>
+    <h2>이런 말은 안 합니다</h2>
+    <div class="trust-grid">
+      <div class="trust-item"><b>"100% 승인" 이란 말 안 씁니다</b><span>기관 심사는 저희가 보장할 수 없는 영역이에요. 가능성을 정직하게 말씀드립니다.</span></div>
+      <div class="trust-item"><b>계약은 항상 서면으로</b><span>구두 약속으로 진행하지 않습니다. 진행 전 계약 내용을 문서로 확인하실 수 있어요.</span></div>
+      <div class="trust-item"><b>비용은 미리, 명확하게</b><span>수수료는 상담 단계에서 먼저 안내드리고, 놀랄 일 없이 진행합니다.</span></div>
+      <div class="trust-item"><b>다른 상품 끼워팔지 않습니다</b><span>정책자금을 이유로 보험·다른 금융상품을 권하지 않습니다.</span></div>
+    </div>
+    <div class="honest-box" style="margin-top:16px;">
+      <b>솔직히 말씀드리면, 이제 막 시작했어요.</b>
+      <p>화려한 이력을 내세우는 대신, 그만큼 사장님 한 분 한 분께 더 꼼꼼히 신경 쓰겠습니다. 진행 상황도 숨기지 않고 그대로 공유해드릴게요.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">이런 분이라면</div>
+    <h2>한번 확인해보시면 좋아요</h2>
+    <ul class="check-list">
+      <li><span class="c">✓</span>매출 규모와 상관없이, 사업자등록이 되어 있다면 확인해볼 자금이 있을 수 있어요</li>
+      <li><span class="c">✓</span>창업 초기든, 7년 이상 운영 중이든 조건에 맞는 자금이 다를 뿐 방법은 있습니다</li>
+      <li><span class="c">✓</span>대출을 이미 받아본 적 있어도, 추가로 가능한 자금이 있는지 다시 확인할 수 있어요</li>
+      <li><span class="c">✓</span>"이런 것도 되나요?" 싶은 것도 일단 편하게 물어보셔도 괜찮습니다</li>
+    </ul>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="eyebrow">자주 묻는 질문</div>
+    <h2>궁금하신 점, 미리 답해드릴게요</h2>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">Q.</span>비용은 얼마인가요?</div><div class="faq-a">상담과 진단은 무료입니다. 실제 진행을 원하실 경우의 비용은 첫 상담에서 바로 안내드리며, 사업 진행 전에는 청구되지 않습니다.</div></div>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">Q.</span>사기 아닌가요? 요즘 이런 광고 많던데요.</div><div class="faq-a">맞습니다, 걱정하실 만해요. 그래서 저희는 "100% 승인" 같은 말을 쓰지 않고, 계약은 항상 서면으로, 비용은 사전에 명확히 안내해드립니다. 부담 없이 질문만 먼저 해보셔도 됩니다.</div></div>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">Q.</span>꼭 자금을 받아야만 하나요?</div><div class="faq-a">아니요. 진단 후 조건이 안 맞거나 원치 않으시면 언제든 그만두실 수 있습니다. 억지로 진행하지 않아요.</div></div>
+  </div>
+</section>
+
+<div class="final-cta" id="contact">
+  <div class="wrap">
+    <h2>지금 바로, 부담 없이 물어보세요</h2>
+    <p>1분이면 카톡방이 열립니다. 결정은 그다음에 천천히 하셔도 괜찮아요.</p>
+    <a class="cta-btn kakao-cta" href="#">💬 카톡으로 무료 진단 받기</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="biz-name">한국사업자성장지원센터</div>
+    <div>본 페이지는 정보 제공을 목적으로 하며, 정책자금 승인 여부는 운영기관의 심사 결과에 따릅니다.<br>상담 내용은 실제 진행 전까지 비용이 발생하지 않습니다.</div>
+  </div>
+</footer>
+
+<div class="sticky-bar">
+  <div class="txt"><b>우리 가게, 받을 수 있을까요?</b><span>카톡으로 1분이면 확인돼요</span></div>
+  <a class="cta-btn kakao-cta" href="#">확인하기</a>
+</div>
+
+<script>
+  // 카카오톡 채널 링크가 생기면 아래 한 줄만 바꿔주세요.
+  var KAKAO_CHANNEL_URL = "https://pf.kakao.com/_여기에채널ID";
+  document.querySelectorAll(".kakao-cta").forEach(function (el) {
+    el.setAttribute("href", KAKAO_CHANNEL_URL);
+    el.setAttribute("target", "_blank");
+    el.setAttribute("rel", "noopener");
+  });
+</script>
