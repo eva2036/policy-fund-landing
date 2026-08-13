@@ -1,53 +1,56 @@
 <title>사장님, 숨은 정책자금부터 무료로 확인해보세요</title>
 <style>
   :root {
-    --paper: #f5f0e4;
-    --paper-raise: #fbf8f0;
-    --ink: #1f3b2e;
-    --ink-soft: #4b6358;
-    --ink-faint: #7c8f81;
-    --line: #ddd5c0;
-    --line-strong: #c7bd9f;
-    --accent: #e8642b;
-    --accent-dark: #c94f1c;
-    --accent-soft: #fbdcc7;
+    --paper: #f5f6f8;
+    --paper-raise: #ffffff;
+    --ink: #17213a;
+    --ink-soft: #4e5872;
+    --ink-faint: #838da3;
+    --line: #e0e3e9;
+    --line-strong: #c9cdd8;
+    --accent: #ab8a42;
+    --accent-dark: #8a6e2f;
+    --accent-soft: #f0e9d5;
+    --on-accent: #1a1f1a;
     --card: #ffffff;
-    --dark: #16281f;
-    --dark-raise: #1e352a;
-    --shadow: 0 2px 6px rgba(31,59,46,0.07), 0 14px 32px -18px rgba(31,59,46,0.22);
+    --dark: #0e1424;
+    --dark-raise: #17203a;
+    --shadow: 0 2px 6px rgba(23,33,58,0.06), 0 14px 32px -18px rgba(23,33,58,0.18);
   }
   :root:not([data-theme="light"]) {
     @media (prefers-color-scheme: dark) {
-      --paper: #12160f;
-      --paper-raise: #171c14;
-      --ink: #ede8da;
-      --ink-soft: #a8b3a6;
-      --ink-faint: #6d7a6c;
-      --line: #2a2f26;
-      --line-strong: #3a4034;
-      --accent: #ff7a3d;
-      --accent-dark: #ff8f5c;
-      --accent-soft: #3a2416;
-      --card: #1a1f17;
-      --dark: #0b120d;
-      --dark-raise: #131c15;
+      --paper: #0f1320;
+      --paper-raise: #161b2c;
+      --ink: #e7e9ee;
+      --ink-soft: #aab0c2;
+      --ink-faint: #6f7690;
+      --line: #262c40;
+      --line-strong: #343b54;
+      --accent: #d4b05a;
+      --accent-dark: #e8c878;
+      --accent-soft: #34291a;
+      --on-accent: #1a1f1a;
+      --card: #161b2c;
+      --dark: #05070d;
+      --dark-raise: #0c1120;
       --shadow: 0 2px 6px rgba(0,0,0,0.35), 0 14px 32px -18px rgba(0,0,0,0.6);
     }
   }
   :root[data-theme="dark"] {
-    --paper: #12160f;
-    --paper-raise: #171c14;
-    --ink: #ede8da;
-    --ink-soft: #a8b3a6;
-    --ink-faint: #6d7a6c;
-    --line: #2a2f26;
-    --line-strong: #3a4034;
-    --accent: #ff7a3d;
-    --accent-dark: #ff8f5c;
-    --accent-soft: #3a2416;
-    --card: #1a1f17;
-    --dark: #0b120d;
-    --dark-raise: #131c15;
+    --paper: #0f1320;
+    --paper-raise: #161b2c;
+    --ink: #e7e9ee;
+    --ink-soft: #aab0c2;
+    --ink-faint: #6f7690;
+    --line: #262c40;
+    --line-strong: #343b54;
+    --accent: #d4b05a;
+    --accent-dark: #e8c878;
+    --accent-soft: #34291a;
+    --on-accent: #1a1f1a;
+    --card: #161b2c;
+    --dark: #05070d;
+    --dark-raise: #0c1120;
     --shadow: 0 2px 6px rgba(0,0,0,0.35), 0 14px 32px -18px rgba(0,0,0,0.6);
   }
 
@@ -77,22 +80,22 @@
   .nav-links { display: none; gap: 18px; font-size: 13.5px; color: var(--ink-soft); }
   .nav-cta {
     font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; font-weight: 700;
-    background: var(--accent); color: #fff9f2; padding: 8px 14px; border-radius: 999px; text-decoration: none;
+    background: var(--accent); color: var(--on-accent); padding: 8px 14px; border-radius: 999px; text-decoration: none;
   }
   @media (min-width: 640px) { .nav-links { display: flex; } }
 
   /* ---- CTA button ---- */
   .cta-btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    background: var(--accent); color: #fff9f2;
+    background: var(--accent); color: var(--on-accent);
     font-weight: 800; font-size: 16.5px;
     padding: 16px 20px; border-radius: 14px;
     text-decoration: none;
-    box-shadow: 0 10px 24px -10px rgba(232,100,43,0.55);
+    box-shadow: 0 10px 22px -12px color-mix(in srgb, var(--accent) 65%, transparent);
     border: none; width: 100%;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .cta-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 28px -10px rgba(232,100,43,0.6); }
+  .cta-btn:hover { transform: translateY(-1px); box-shadow: 0 14px 26px -12px color-mix(in srgb, var(--accent) 70%, transparent); }
   .cta-btn:focus-visible { outline: 3px solid var(--accent-dark); outline-offset: 3px; }
   .cta-sub { text-align: center; font-size: 12.5px; color: var(--ink-faint); margin-top: 10px; }
   .cta-btn.outline { background: transparent; color: var(--paper); border: 1px solid color-mix(in srgb, var(--paper) 40%, transparent); box-shadow: none; }
@@ -107,7 +110,13 @@
     padding: 6px 14px; border-radius: 999px; margin-bottom: 20px;
   }
   .hero-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .hero-name { font-size: 15px; font-weight: 700; color: color-mix(in srgb, var(--paper) 70%, transparent); margin-bottom: 6px; }
+  .hero-id { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .hero-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-dark);
+    display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0;
+    border: 2px solid color-mix(in srgb, var(--paper) 25%, transparent);
+  }
+  .hero-name { font-size: 15px; font-weight: 700; color: color-mix(in srgb, var(--paper) 70%, transparent); }
   h1 {
     font-size: clamp(28px, 7.5vw, 38px);
     font-weight: 900; letter-spacing: -0.02em; line-height: 1.32;
@@ -272,7 +281,7 @@
 
 <nav>
   <div class="nav-row">
-    <div class="nav-brand">한국사업자성장지원센터</div>
+    <div class="nav-brand">🌱 한국사업자성장지원센터</div>
     <div class="nav-links">
       <a href="#about">소개</a>
       <a href="#diagnosis">무료진단</a>
@@ -286,8 +295,11 @@
 <div class="hero" id="about">
   <div class="wrap">
     <div class="hero-badge"><span class="dot"></span>소상공인 · 중소기업 정책자금 무료 진단</div>
-    <div class="hero-name">한국사업자성장지원센터 · 정책자금 상담</div>
-    <h1>사장님이 놓치고 있는<br><span class="accent-word">숨은 자금</span>, 먼저 확인해보세요</h1>
+    <div class="hero-id">
+      <div class="hero-avatar">🙂</div>
+      <div class="hero-name">한국사업자성장지원센터 · 정책자금 상담</div>
+    </div>
+    <h1>사장님이 놓치고 있는<br><span class="accent-word">💰 숨은 자금</span>, 먼저 확인해보세요</h1>
     <p class="hero-sub">바쁜 와중에 정책자금까지 알아볼 시간, 없으시죠. 카톡으로 편하게 물어보시면 지금 상황에 맞는 자금을 무료로 찾아드립니다.</p>
     <ul class="hero-checks">
       <li><span class="c">✓</span>소상공인부터 중소기업까지</li>
@@ -304,7 +316,7 @@
 <section style="padding-top:32px;">
   <div class="wrap">
     <div class="notice">
-      <div class="notice-title">NOTICE</div>
+      <div class="notice-title">🔔 NOTICE</div>
       <p><b>저는 보험을 팔지 않는, 정책자금 상담만 하는 사람입니다.</b></p>
       <p>정책자금을 이유로 보험이나 다른 금융상품을 권해드리지 않습니다. 신용보증기금·기술보증기금·중소벤처기업진흥공단 등 정부 정책자금 상담에만 집중하고 있어요.</p>
       <p>궁금하신 점은 언제든 편하게 카톡으로 먼저 물어봐 주세요.</p>
@@ -315,7 +327,7 @@
 <section>
   <div class="wrap">
     <div class="eyebrow">이런 고민, 있으시죠</div>
-    <h2>사장님만 그런 게 아니에요</h2>
+    <h2>😥 사장님만 그런 게 아니에요</h2>
     <div class="pain-list">
       <div class="pain-item"><span class="mark">😮‍💨</span><p><b>정책자금이 있는 줄도 몰랐어요.</b> 은행에서 대출이 안 된다고 하면 그냥 포기하게 되죠.</p></div>
       <div class="pain-item"><span class="mark">📄</span><p><b>서류만 봐도 머리가 아파요.</b> 사업계획서 하나 준비하는 데 반나절이 훌쩍 갑니다.</p></div>
@@ -327,7 +339,7 @@
 <section class="diagnosis" id="diagnosis">
   <div class="wrap">
     <div class="eyebrow">FREE DIAGNOSIS</div>
-    <h2>우리 가게, 정책자금 받을 수 있을까요?</h2>
+    <h2>🔍 우리 가게, 정책자금 받을 수 있을까요?</h2>
     <div class="diag-steps">
       <div class="diag-step"><div class="n">1</div><div><div class="t">카톡으로 간단히 문의</div><div class="d">업종·매출·연차만 알려주셔도 충분해요</div></div></div>
       <div class="diag-step"><div class="n">2</div><div><div class="t">제가 직접 확인</div><div class="d">지금 가능한 정책자금이 있는지 살펴봅니다</div></div></div>
@@ -348,7 +360,7 @@
 
 <div class="statement">
   <div class="wrap">
-    <div class="eyebrow">먼저 말씀드릴게요</div>
+    <div class="eyebrow">🙋 먼저 말씀드릴게요</div>
     <div class="statement-lines">
       <p>전화로 먼저 영업하는 곳,<br>일단 한번 의심해보세요.</p>
       <p class="pop">여기는 <span class="mono" style="font-weight:900;">한국사업자성장지원센터</span>가 직접 상담합니다.</p>
@@ -366,7 +378,7 @@
 <section id="service">
   <div class="wrap">
     <div class="eyebrow">이렇게 도와드려요</div>
-    <h2>진행은 이렇게 간단합니다</h2>
+    <h2>📋 진행은 이렇게 간단합니다</h2>
     <div class="flow-list">
       <div class="flow-item"><div class="flow-num">1</div><div><div class="flow-title">카톡으로 편하게 문의</div><div class="flow-desc">사업 현황을 간단히 말씀해주시면 됩니다. 어려운 용어 몰라도 괜찮아요.</div></div></div>
       <div class="flow-item"><div class="flow-num">2</div><div><div class="flow-title">무료로 상황 진단</div><div class="flow-desc">지금 받으실 수 있는 자금이 있는지 먼저 확인해드립니다.</div></div></div>
@@ -380,7 +392,7 @@
 <section>
   <div class="wrap">
     <div class="eyebrow">먼저 약속드려요</div>
-    <h2>이런 말은 안 합니다</h2>
+    <h2>🚫 이런 말은 안 합니다</h2>
     <div class="trust-grid">
       <div class="trust-item"><b>"100% 승인" 이란 말 안 씁니다</b><span>기관 심사는 저희가 보장할 수 없는 영역이에요. 가능성을 정직하게 말씀드립니다.</span></div>
       <div class="trust-item"><b>계약은 항상 서면으로</b><span>구두 약속으로 진행하지 않습니다. 진행 전 계약 내용을 문서로 확인하실 수 있어요.</span></div>
@@ -388,7 +400,7 @@
       <div class="trust-item"><b>다른 상품 끼워팔지 않습니다</b><span>정책자금을 이유로 보험·다른 금융상품을 권하지 않습니다.</span></div>
     </div>
     <div class="honest-box" style="margin-top:16px;">
-      <b>솔직히 말씀드리면, 이제 막 시작했어요.</b>
+      <b>🌱 솔직히 말씀드리면, 이제 막 시작했어요.</b>
       <p>화려한 이력을 내세우는 대신, 그만큼 사장님 한 분 한 분께 더 꼼꼼히 신경 쓰겠습니다. 진행 상황도 숨기지 않고 그대로 공유해드릴게요.</p>
     </div>
   </div>
@@ -397,7 +409,7 @@
 <section>
   <div class="wrap">
     <div class="eyebrow">이런 분이라면</div>
-    <h2>한번 확인해보시면 좋아요</h2>
+    <h2>✅ 한번 확인해보시면 좋아요</h2>
     <ul class="check-list">
       <li><span class="c">✓</span>매출 규모와 상관없이, 사업자등록이 되어 있다면 확인해볼 자금이 있을 수 있어요</li>
       <li><span class="c">✓</span>창업 초기든, 7년 이상 운영 중이든 조건에 맞는 자금이 다를 뿐 방법은 있습니다</li>
@@ -410,10 +422,10 @@
 <section id="faq">
   <div class="wrap">
     <div class="eyebrow">자주 묻는 질문</div>
-    <h2>궁금하신 점, 미리 답해드릴게요</h2>
-    <div class="faq-item"><div class="faq-q"><span class="qmark">Q.</span>비용은 얼마인가요?</div><div class="faq-a">상담과 진단은 무료입니다. 실제 진행을 원하실 경우의 비용은 첫 상담에서 바로 안내드리며, 사업 진행 전에는 청구되지 않습니다.</div></div>
-    <div class="faq-item"><div class="faq-q"><span class="qmark">Q.</span>사기 아닌가요? 요즘 이런 광고 많던데요.</div><div class="faq-a">맞습니다, 걱정하실 만해요. 그래서 저희는 "100% 승인" 같은 말을 쓰지 않고, 계약은 항상 서면으로, 비용은 사전에 명확히 안내해드립니다. 부담 없이 질문만 먼저 해보셔도 됩니다.</div></div>
-    <div class="faq-item"><div class="faq-q"><span class="qmark">Q.</span>꼭 자금을 받아야만 하나요?</div><div class="faq-a">아니요. 진단 후 조건이 안 맞거나 원치 않으시면 언제든 그만두실 수 있습니다. 억지로 진행하지 않아요.</div></div>
+    <h2>💬 궁금하신 점, 미리 답해드릴게요</h2>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">💰</span>비용은 얼마인가요?</div><div class="faq-a">상담과 진단은 무료입니다. 실제 진행을 원하실 경우의 비용은 첫 상담에서 바로 안내드리며, 사업 진행 전에는 청구되지 않습니다.</div></div>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">🤔</span>사기 아닌가요? 요즘 이런 광고 많던데요.</div><div class="faq-a">맞습니다, 걱정하실 만해요. 그래서 저희는 "100% 승인" 같은 말을 쓰지 않고, 계약은 항상 서면으로, 비용은 사전에 명확히 안내해드립니다. 부담 없이 질문만 먼저 해보셔도 됩니다.</div></div>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">🚪</span>꼭 자금을 받아야만 하나요?</div><div class="faq-a">아니요. 진단 후 조건이 안 맞거나 원치 않으시면 언제든 그만두실 수 있습니다. 억지로 진행하지 않아요.</div></div>
   </div>
 </section>
 
