@@ -81,10 +81,10 @@
     border-bottom: 1px solid var(--line);
   }
   .nav-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 22px; max-width: 640px; margin: 0 auto; }
-  .nav-brand { font-weight: 800; font-size: 14.5px; }
+  .nav-brand { font-weight: 800; font-size: clamp(13px, 3vw, 15px); }
   .nav-links { display: none; gap: 18px; font-size: 13.5px; color: var(--ink-soft); }
   .nav-cta {
-    font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; font-weight: 700;
+    font-family: ui-monospace, Consolas, monospace; font-size: clamp(11.5px, 2.8vw, 13px); font-weight: 700;
     background: var(--accent); color: var(--on-accent); padding: 8px 14px; border-radius: 999px; text-decoration: none;
   }
   @media (min-width: 640px) { .nav-links { display: flex; } }
@@ -93,7 +93,7 @@
   .cta-btn {
     display: flex; align-items: center; justify-content: center; gap: 8px;
     background: var(--accent); color: var(--on-accent);
-    font-weight: 800; font-size: 15.5px;
+    font-weight: 800; font-size: clamp(14.5px, 3.8vw, 17.5px);
     padding: 13px 20px; border-radius: 14px;
     text-decoration: none;
     box-shadow: 0 10px 22px -12px color-mix(in srgb, var(--accent) 65%, transparent);
@@ -138,17 +138,17 @@
     display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0;
     border: 2px solid color-mix(in srgb, var(--paper) 25%, transparent);
   }
-  .hero-name { font-size: 15px; font-weight: 700; color: color-mix(in srgb, var(--paper) 70%, transparent); }
+  .hero-name { font-size: clamp(13.5px, 3.4vw, 15px); font-weight: 700; color: color-mix(in srgb, var(--paper) 70%, transparent); }
   .hero-tag { font-size: 10.5px; letter-spacing: 0.06em; color: color-mix(in srgb, var(--paper) 45%, transparent); margin-top: 2px; }
   h1 {
-    font-size: clamp(24px, 7vw, 36px);
+    font-size: clamp(26px, 8vw, 46px);
     font-weight: 900; letter-spacing: -0.02em; line-height: 1.26;
     margin: 0 0 10px; text-wrap: balance; color: var(--paper);
   }
   h1 .accent-word { color: var(--accent); }
-  .hero-sub { font-size: 15.5px; color: color-mix(in srgb, var(--paper) 72%, transparent); max-width: 42ch; margin: 0 0 14px; }
+  .hero-sub { font-size: clamp(14.5px, 4vw, 19px); color: color-mix(in srgb, var(--paper) 72%, transparent); max-width: 42ch; margin: 0 0 14px; }
   .hero-checks { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-direction: column; gap: 5px; }
-  .hero-checks li { display: flex; gap: 9px; font-size: 14px; color: color-mix(in srgb, var(--paper) 88%, transparent); }
+  .hero-checks li { display: flex; gap: 9px; font-size: clamp(13px, 3.4vw, 16.5px); color: color-mix(in srgb, var(--paper) 88%, transparent); }
   .hero-checks .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
   .hero-cta-row { display: flex; flex-direction: column; gap: 8px; }
 
@@ -158,7 +158,7 @@
     border-radius: 4px 14px 14px 4px; padding: 18px 22px; box-shadow: var(--shadow);
   }
   .notice-title { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: 0.1em; color: var(--accent); font-weight: 700; margin-bottom: 8px; }
-  .notice p { margin: 0 0 8px; font-size: 15.5px; color: var(--ink-soft); }
+  .notice p { margin: 0 0 8px; font-size: clamp(13.5px, 3.6vw, 16.5px); color: var(--ink-soft); }
   .notice p:last-child { margin-bottom: 0; }
   .notice b { color: var(--ink); }
 
@@ -168,7 +168,7 @@
     font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: 0.1em;
     color: var(--accent); text-transform: uppercase; margin-bottom: 10px; text-align: center;
   }
-  h2 { font-size: 24px; font-weight: 800; text-align: center; margin: 0 0 32px; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { font-size: clamp(20px, 5.5vw, 30px); font-weight: 800; text-align: center; margin: 0 0 32px; letter-spacing: -0.01em; text-wrap: balance; }
 
   /* ---- Pain points ---- */
   .pain-list { display: flex; flex-direction: column; gap: 12px; }
@@ -176,8 +176,8 @@
     background: var(--card); border: 1px solid var(--line); border-radius: 14px;
     padding: 16px 18px; display: flex; gap: 14px; align-items: flex-start; box-shadow: var(--shadow);
   }
-  .pain-item .mark { font-size: 22px; flex-shrink: 0; line-height: 1.3; }
-  .pain-item p { margin: 0; font-size: 15.5px; color: var(--ink-soft); }
+  .pain-item .mark { font-size: clamp(20px, 5vw, 26px); flex-shrink: 0; line-height: 1.3; }
+  .pain-item p { margin: 0; font-size: clamp(13.5px, 3.6vw, 16.5px); color: var(--ink-soft); }
   .pain-item b { color: var(--ink); }
 
   /* ---- Diagnosis section ---- */
@@ -192,14 +192,14 @@
     display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0;
     font-family: ui-monospace, Consolas, monospace;
   }
-  .diag-step .t { font-weight: 700; font-size: 14.5px; }
-  .diag-step .d { font-size: 12.5px; color: var(--ink-faint); }
+  .diag-step .t { font-weight: 700; font-size: clamp(13.5px, 3.4vw, 16px); }
+  .diag-step .d { font-size: clamp(11.5px, 2.8vw, 13.5px); color: var(--ink-faint); }
   .diag-give {
     background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow);
   }
-  .diag-give-title { font-weight: 800; font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .diag-give-title { font-weight: 800; font-size: clamp(14px, 3.6vw, 16.5px); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
   .diag-give ul { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
-  .diag-give li { display: flex; gap: 9px; font-size: 15px; color: var(--ink-soft); }
+  .diag-give li { display: flex; gap: 9px; font-size: clamp(13.5px, 3.6vw, 16px); color: var(--ink-soft); }
   .diag-give .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
 
   /* ---- Flow ---- */
@@ -211,8 +211,8 @@
     display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: ui-monospace, Consolas, monospace;
     font-size: 15px; flex-shrink: 0;
   }
-  .flow-title { font-weight: 700; font-size: 17px; margin-bottom: 3px; }
-  .flow-desc { font-size: 14.5px; color: var(--ink-soft); }
+  .flow-title { font-weight: 700; font-size: clamp(15px, 4vw, 19px); margin-bottom: 3px; }
+  .flow-desc { font-size: clamp(13px, 3.4vw, 16px); color: var(--ink-soft); }
 
   /* ---- Trust grid ---- */
   .trust-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
@@ -220,13 +220,13 @@
     background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--ink);
     border-radius: 10px; padding: 14px 18px; font-size: 14px;
   }
-  .trust-item b { display: block; font-size: 16px; margin-bottom: 3px; }
-  .trust-item span { color: var(--ink-soft); font-size: 14.5px; }
+  .trust-item b { display: block; font-size: clamp(14.5px, 3.8vw, 17.5px); margin-bottom: 3px; }
+  .trust-item span { color: var(--ink-soft); font-size: clamp(13px, 3.4vw, 15.5px); }
 
   /* ---- Eligibility checklist ---- */
   .check-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
   .check-list li {
-    display: flex; gap: 10px; align-items: flex-start; font-size: 15.5px;
+    display: flex; gap: 10px; align-items: flex-start; font-size: clamp(13.5px, 3.8vw, 17px);
     background: var(--paper-raise); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px;
   }
   .check-list .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
@@ -234,14 +234,14 @@
   /* ---- FAQ ---- */
   .faq-item { border-bottom: 1px solid var(--line); padding: 18px 0; }
   .faq-item:first-child { padding-top: 0; }
-  .faq-q { font-weight: 700; font-size: 16.5px; margin-bottom: 8px; display: flex; gap: 10px; }
+  .faq-q { font-weight: 700; font-size: clamp(15px, 4vw, 18.5px); margin-bottom: 8px; display: flex; gap: 10px; }
   .faq-q .qmark { color: var(--accent); flex-shrink: 0; }
-  .faq-a { font-size: 15px; color: var(--ink-soft); padding-left: 24px; }
+  .faq-a { font-size: clamp(13.5px, 3.6vw, 16.5px); color: var(--ink-soft); padding-left: 24px; }
 
   /* ---- Final CTA ---- */
   .final-cta { text-align: center; padding: 52px 0 64px; }
   .final-cta h2 { margin-bottom: 12px; }
-  .final-cta p { color: var(--ink-soft); font-size: 14.5px; margin: 0 0 26px; }
+  .final-cta p { color: var(--ink-soft); font-size: clamp(13px, 3.4vw, 16px); margin: 0 0 26px; }
 
   footer {
     background: var(--paper-raise); border-top: 1px solid var(--line);
@@ -254,12 +254,12 @@
   .statement .eyebrow { color: var(--accent); }
   .statement h2 { color: var(--paper); }
   .statement-lines { text-align: center; margin: 0 0 30px; }
-  .statement-lines p { font-size: 19px; font-weight: 800; margin: 0 0 6px; line-height: 1.5; text-wrap: balance; }
-  .statement-lines .dim { color: color-mix(in srgb, var(--paper) 60%, transparent); font-weight: 600; font-size: 15px; }
+  .statement-lines p { font-size: clamp(17px, 5vw, 24px); font-weight: 800; margin: 0 0 6px; line-height: 1.5; text-wrap: balance; }
+  .statement-lines .dim { color: color-mix(in srgb, var(--paper) 60%, transparent); font-weight: 600; font-size: clamp(13.5px, 3.6vw, 16.5px); }
   .statement-lines .pop { color: var(--accent); }
   .statement-checks { display: flex; flex-direction: column; gap: 10px; max-width: 440px; margin: 0 auto; }
   .statement-checks li {
-    list-style: none; display: flex; gap: 10px; font-size: 15.5px;
+    list-style: none; display: flex; gap: 10px; font-size: clamp(13.5px, 3.8vw, 17px);
     background: color-mix(in srgb, var(--paper) 8%, transparent);
     border: 1px solid color-mix(in srgb, var(--paper) 18%, transparent);
     border-radius: 10px; padding: 12px 16px;
@@ -296,9 +296,6 @@
   @media (min-width: 640px) {
     .hero-cta-row { flex-direction: row; }
     .hero-cta-row .cta-btn { width: auto; flex: 1; }
-  }
-  @media (min-width: 720px) {
-    h1 { font-size: 44px; }
   }
   @media (min-width: 900px) {
     .hero { min-height: calc(100vh - 65px); padding: 28px 0; display: flex; align-items: center; }
