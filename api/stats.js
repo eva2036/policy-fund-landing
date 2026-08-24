@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   const secret = (process.env.STATS_SECRET || "").trim();
   if (!secret || req.query.key !== secret) {
     res.status(401).json({ error: "unauthorized" });
