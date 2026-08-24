@@ -517,6 +517,15 @@
     el.setAttribute("target", "_blank");
     el.setAttribute("rel", "noopener");
   });
+
+  // 카톡 버튼 클릭 추적 (Vercel Web Analytics, 본인 계정에서만 확인 가능)
+  document.querySelectorAll(".kakao-cta").forEach(function (el) {
+    el.addEventListener("click", function () {
+      if (window.va) { window.va("event", { name: "kakao_click", location: el.closest("[id]") ? el.closest("[id]").id : "unknown" }); }
+    });
+  });
 </script>
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
 </body>
 </html>
