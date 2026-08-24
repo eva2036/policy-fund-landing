@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>카톡 클릭 통계</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  body { font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f5f6f8; color: #17213a; margin: 0; padding: 40px 20px; }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  .sub { color: #838da3; font-size: 13px; margin-bottom: 28px; }
+  .total-card { background: #17213a; color: #fff; border-radius: 14px; padding: 22px 26px; margin-bottom: 24px; }
+  .total-card .n { font-size: 34px; font-weight: 800; font-family: ui-monospace, Consolas, monospace; }
+  .total-card .l { font-size: 13px; opacity: .7; margin-top: 4px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  th, td { text-align: left; padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #e0e3e9; }
+  th { background: #fff; color: #838da3; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  td.count { font-family: ui-monospace, Consolas, monospace; font-weight: 700; }
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar { height: 8px; background: #ab8a42; border-radius: 4px; }
+  .empty { text-align: center; color: #838da3; padding: 40px; }
+  .err { color: #b3261e; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💬 카톡 클릭 통계</h1>
+  <div class="sub">"카톡으로 무료진단 받기" 버튼 클릭 수 (일별)</div>
+  <div id="content">불러오는 중...</div>
+</div>
+<script>
+  const params = new URLSearchParams(location.search);
+  const key = params.get("key") || "";
+  fetch("/api/stats?key=" + encodeURIComponent(key))
+    .then(r => r.json())
+    .then(data => {
+      const el = document.getElementById("content");
+      if (data.error) {
+        el.innerHTML = '<p class="err">인증 실패: URL 뒤에 ?key=본인비밀키 를 붙여주세요.</p>';
+        return;
+      }
+      const days = Object.keys(data.byDay).sort().reverse();
+      const max = Math.max(1, ...Object.values(data.byDay));
+      let rows = days.map(d => {
+        const c = data.byDay[d];
+        const w = Math.round((c / max) * 100);
+        return `<tr><td>${d}</td><td class="count"><div class="bar-wrap"><div class="bar" style="width:${w}px"></div><span>${c}</span></div></td></tr>`;
+      }).join("");
+      if (!days.length) rows = '<tr><td colspan="2" class="empty">아직 클릭 기록이 없습니다</td></tr>';
+      el.innerHTML = `
+        <div class="total-card"><div class="n">${data.total}</div><div class="l">누적 클릭수</div></div>
+        <table><thead><tr><th>날짜</th><th>클릭수</th></tr></thead><tbody>${rows}</tbody></table>
+      `;
+    })
+    .catch(() => {
+      document.getElementById("content").innerHTML = '<p class="err">불러오기 실패</p>';
+    });
+</script>
+</body>
+</html>
