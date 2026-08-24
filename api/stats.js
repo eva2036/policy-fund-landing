@@ -1,5 +1,5 @@
 export default async function handler(req, res) {
-  const secret = process.env.STATS_SECRET;
+  const secret = (process.env.STATS_SECRET || "").trim();
   if (!secret || req.query.key !== secret) {
     res.status(401).json({ error: "unauthorized" });
     return;
