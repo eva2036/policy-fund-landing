@@ -29,7 +29,7 @@ export default async function handler(req, res) {
   const token = process.env.KV_REST_API_TOKEN;
 
   try {
-    const [clicks, visits, dwellTotal, dwellCount, s25, s50, s75, s100] = await Promise.all([
+    const [clicks, visits, dwellTotal, dwellCount, s25, s50, s75, s100, countries, cities, devices, browsers] = await Promise.all([
       getDayCounts(url, token, "kakao_clicks"),
       getDayCounts(url, token, "visits"),
       getDayCounts(url, token, "dwell_total"),
@@ -38,6 +38,10 @@ export default async function handler(req, res) {
       getDayCounts(url, token, "scroll_50"),
       getDayCounts(url, token, "scroll_75"),
       getDayCounts(url, token, "scroll_100"),
+      getDayCounts(url, token, "geo_country"),
+      getDayCounts(url, token, "geo_city"),
+      getDayCounts(url, token, "device"),
+      getDayCounts(url, token, "browser"),
     ]);
 
     const days = new Set([
@@ -61,7 +65,21 @@ export default async function handler(req, res) {
     });
 
     const total = Object.values(clicks).reduce((a, b) => a + b, 0);
-    res.status(200).json({ total, byDay });
+
+    function toSortedList(obj, decode) {
+      return Object.entries(obj)
+        .map(([k, v]) => [decode ? decodeURIComponent(k) : k, v])
+        .sort((a, b) => b[1] - a[1]);
+    }
+
+    res.status(200).json({
+      total,
+      byDay,
+      countries: toSortedList(countries, true),
+      cities: toSortedList(cities, true),
+      devices: toSortedList(devices, false),
+      browsers: toSortedList(browsers, false),
+    });
   } catch (e) {
     res.status(500).json({ error: "server error" });
   }
