@@ -13,8 +13,9 @@
   .total-card { background: #17213a; color: #fff; border-radius: 14px; padding: 22px 26px; margin-bottom: 24px; }
   .total-card .n { font-size: 34px; font-weight: 800; font-family: ui-monospace, Consolas, monospace; }
   .total-card .l { font-size: 13px; opacity: .7; margin-top: 4px; }
-  table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-  th, td { text-align: left; padding: 12px 16px; font-size: 14px; border-bottom: 1px solid #e0e3e9; }
+  .table-scroll { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+  table { width: 100%; border-collapse: collapse; background: #fff; min-width: 620px; }
+  th, td { text-align: left; padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid #e0e3e9; white-space: nowrap; }
   th { background: #fff; color: #838da3; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
   td.count { font-family: ui-monospace, Consolas, monospace; font-weight: 700; }
   .bar-wrap { display: flex; align-items: center; gap: 8px; }
@@ -41,16 +42,22 @@
         return;
       }
       const days = Object.keys(data.byDay).sort().reverse();
-      const max = Math.max(1, ...Object.values(data.byDay));
       let rows = days.map(d => {
-        const c = data.byDay[d];
-        const w = Math.round((c / max) * 100);
-        return `<tr><td>${d}</td><td class="count"><div class="bar-wrap"><div class="bar" style="width:${w}px"></div><span>${c}</span></div></td></tr>`;
+        const r = data.byDay[d];
+        const mm = String(Math.floor(r.avgDwellSec / 60)).padStart(2, "0");
+        const ss = String(r.avgDwellSec % 60).padStart(2, "0");
+        return `<tr>
+          <td>${d}</td>
+          <td class="count">${r.clicks}</td>
+          <td>${r.visits}</td>
+          <td>${mm}:${ss}</td>
+          <td>${r.scroll25}% / ${r.scroll50}% / ${r.scroll75}% / ${r.scroll100}%</td>
+        </tr>`;
       }).join("");
-      if (!days.length) rows = '<tr><td colspan="2" class="empty">아직 클릭 기록이 없습니다</td></tr>';
+      if (!days.length) rows = '<tr><td colspan="5" class="empty">아직 기록이 없습니다</td></tr>';
       el.innerHTML = `
-        <div class="total-card"><div class="n">${data.total}</div><div class="l">누적 클릭수</div></div>
-        <table><thead><tr><th>날짜</th><th>클릭수</th></tr></thead><tbody>${rows}</tbody></table>
+        <div class="total-card"><div class="n">${data.total}</div><div class="l">누적 카톡 클릭수</div></div>
+        <div class="table-scroll"><table><thead><tr><th>날짜</th><th>클릭</th><th>방문수</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr></thead><tbody>${rows}</tbody></table></div>
       `;
     })
     .catch(() => {

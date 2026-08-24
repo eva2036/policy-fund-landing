@@ -526,6 +526,43 @@
       } catch (e) {}
     });
   });
+
+  // 스크롤 깊이 / 체류시간 추적 (자체 통계, 본인만 확인 가능)
+  (function () {
+    var maxScroll = 0;
+    var startTime = Date.now();
+    var sent = false;
+
+    function scrollPercent() {
+      var doc = document.documentElement;
+      var scrollTop = window.scrollY || doc.scrollTop;
+      var scrollable = doc.scrollHeight - doc.clientHeight;
+      if (scrollable <= 0) return 100;
+      return Math.min(100, Math.round((scrollTop / scrollable) * 100));
+    }
+
+    window.addEventListener("scroll", function () {
+      var pct = scrollPercent();
+      if (pct > maxScroll) maxScroll = pct;
+    }, { passive: true });
+
+    function sendTracking() {
+      if (sent) return;
+      sent = true;
+      var dwell = Math.round((Date.now() - startTime) / 1000);
+      var payload = JSON.stringify({ maxScroll: maxScroll, dwell: dwell });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/track", new Blob([payload], { type: "application/json" }));
+      } else {
+        fetch("/api/track", { method: "POST", body: payload, keepalive: true });
+      }
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") sendTracking();
+    });
+    window.addEventListener("pagehide", sendTracking);
+  })();
 </script>
 </body>
 </html>
