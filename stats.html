@@ -7,36 +7,35 @@
 <meta name="robots" content="noindex, nofollow">
 <style>
   body { font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f5f6f8; color: #17213a; margin: 0; padding: 40px 20px; }
-  .wrap { max-width: 720px; margin: 0 auto; }
+  .wrap { max-width: 820px; margin: 0 auto; }
   h1 { font-size: 22px; margin-bottom: 4px; }
   .sub { color: #838da3; font-size: 13px; margin-bottom: 28px; }
   h2 { font-size: 15px; margin: 32px 0 12px; color: #4e5872; }
-  .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
-  .stat-card { background: #17213a; color: #fff; border-radius: 14px; padding: 18px 22px; }
-  .stat-card .n { font-size: 28px; font-weight: 800; font-family: ui-monospace, Consolas, monospace; }
-  .stat-card .l { font-size: 12.5px; opacity: .7; margin-top: 4px; }
+  .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stat-card { background: #17213a; color: #fff; border-radius: 14px; padding: 18px 20px; }
+  .stat-card .n { font-size: 26px; font-weight: 800; font-family: ui-monospace, Consolas, monospace; }
+  .stat-card .l { font-size: 12px; opacity: .7; margin-top: 4px; }
   .table-scroll { overflow-x: auto; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-  table { width: 100%; border-collapse: collapse; background: #fff; min-width: 560px; }
+  table { width: 100%; border-collapse: collapse; background: #fff; min-width: 680px; }
   th, td { text-align: left; padding: 12px 16px; font-size: 13.5px; border-bottom: 1px solid #e0e3e9; white-space: nowrap; }
   th { background: #fff; color: #838da3; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
   td.count { font-family: ui-monospace, Consolas, monospace; font-weight: 700; }
   .empty { text-align: center; color: #838da3; padding: 40px; }
   .err { color: #b3261e; }
 
-  /* visitor bar chart */
   .chart { display: flex; align-items: flex-end; gap: 6px; height: 140px; background: #fff; border-radius: 12px; padding: 16px 14px 8px; box-shadow: 0 2px 8px rgba(0,0,0,.06); overflow-x: auto; }
   .chart-col { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; min-width: 34px; height: 100%; flex-shrink: 0; }
   .chart-bar { width: 20px; background: #ab8a42; border-radius: 3px 3px 0 0; min-height: 2px; }
   .chart-n { font-size: 10.5px; color: #17213a; font-weight: 700; margin-bottom: 3px; }
   .chart-d { font-size: 9.5px; color: #838da3; margin-top: 6px; writing-mode: vertical-rl; text-orientation: mixed; }
 
-  /* breakdown grid */
   .breakdown-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .breakdown-card { background: #fff; border-radius: 12px; padding: 16px 18px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
   .breakdown-card h3 { font-size: 12.5px; color: #838da3; margin: 0 0 10px; text-transform: uppercase; letter-spacing: .04em; }
-  .breakdown-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 6px 0; border-bottom: 1px solid #f0f1f3; }
+  .breakdown-row { display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; padding: 6px 0; border-bottom: 1px solid #f0f1f3; }
+  .breakdown-row span:first-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .breakdown-row:last-child { border-bottom: none; }
-  .breakdown-row .v { font-family: ui-monospace, Consolas, monospace; font-weight: 700; }
+  .breakdown-row .v { font-family: ui-monospace, Consolas, monospace; font-weight: 700; flex-shrink: 0; }
   .note { font-size: 11.5px; color: #838da3; margin-top: 24px; line-height: 1.6; }
 </style>
 </head>
@@ -52,6 +51,9 @@
   const labels = {
     mobile: "모바일", desktop: "데스크톱", tablet: "태블릿",
     chrome: "Chrome", safari: "Safari", edge: "Edge", firefox: "Firefox", samsung: "삼성인터넷", other: "기타",
+    windows: "Windows", macos: "macOS", ios: "iOS", android: "Android", linux: "Linux",
+    direct: "직접 방문", instagram: "인스타그램", naver: "네이버", kakao: "카카오", daangn: "당근마켓",
+    google: "구글", facebook: "페이스북", dable: "데이블",
     unknown: "알 수 없음"
   };
   const L = (k) => labels[k] || k;
@@ -68,16 +70,14 @@
       const days = Object.keys(data.byDay).sort();
       const totalVisits = days.reduce((a, d) => a + data.byDay[d].visits, 0);
 
-      // 방문자 수 그래프
       const maxVisits = Math.max(1, ...days.map(d => data.byDay[d].visits));
       const chartCols = days.map(d => {
         const v = data.byDay[d].visits;
         const h = Math.max(2, Math.round((v / maxVisits) * 100));
-        const short = d.slice(5); // MM-DD
+        const short = d.slice(5);
         return `<div class="chart-col"><div class="chart-n">${v}</div><div class="chart-bar" style="height:${h}px"></div><div class="chart-d">${short}</div></div>`;
       }).join("");
 
-      // 일별 표
       let rows = [...days].reverse().map(d => {
         const r = data.byDay[d];
         const mm = String(Math.floor(r.avgDwellSec / 60)).padStart(2, "0");
@@ -85,12 +85,13 @@
         return `<tr>
           <td>${d}</td>
           <td>${r.visits}</td>
-          <td class="count">${r.clicks}</td>
+          <td class="count">${r.clicksKakao}</td>
+          <td class="count">${r.clicksForm}</td>
           <td>${mm}:${ss}</td>
           <td>${r.scroll25}% / ${r.scroll50}% / ${r.scroll75}% / ${r.scroll100}%</td>
         </tr>`;
       }).join("");
-      if (!days.length) rows = '<tr><td colspan="5" class="empty">아직 기록이 없습니다</td></tr>';
+      if (!days.length) rows = '<tr><td colspan="6" class="empty">아직 기록이 없습니다</td></tr>';
 
       function breakdownRows(list, decodeLabel) {
         if (!list.length) return '<div class="breakdown-row"><span>데이터 없음</span></div>';
@@ -102,24 +103,35 @@
       el.innerHTML = `
         <div class="stat-row">
           <div class="stat-card"><div class="n">${totalVisits}</div><div class="l">누적 방문수</div></div>
-          <div class="stat-card"><div class="n">${data.total}</div><div class="l">누적 카톡 클릭수</div></div>
+          <div class="stat-card"><div class="n">${data.totalKakao}</div><div class="l">카톡 클릭수</div></div>
+          <div class="stat-card"><div class="n">${data.totalForm}</div><div class="l">상담신청(폼) 클릭수</div></div>
         </div>
 
         <h2>방문자 수 추이</h2>
         <div class="chart">${chartCols || '<div class="empty">데이터 없음</div>'}</div>
+
+        <h2>유입경로</h2>
+        <div class="breakdown-grid">
+          <div class="breakdown-card"><h3>어디서 들어왔는지</h3>${breakdownRows(data.sources, true)}</div>
+          <div class="breakdown-card"><h3>UTM 캠페인</h3>${breakdownRows(data.utmCampaigns, false)}</div>
+        </div>
 
         <h2>방문자 정보 (누적, 대략적인 위치·기기 기준)</h2>
         <div class="breakdown-grid">
           <div class="breakdown-card"><h3>국가</h3>${breakdownRows(data.countries, true)}</div>
           <div class="breakdown-card"><h3>도시</h3>${breakdownRows(data.cities, false)}</div>
           <div class="breakdown-card"><h3>기기</h3>${breakdownRows(data.devices, true)}</div>
+          <div class="breakdown-card"><h3>OS</h3>${breakdownRows(data.oses, true)}</div>
           <div class="breakdown-card"><h3>브라우저</h3>${breakdownRows(data.browsers, true)}</div>
+          <div class="breakdown-card"><h3>화면 크기</h3>${breakdownRows(data.screens, false)}</div>
+          <div class="breakdown-card"><h3>언어</h3>${breakdownRows(data.langs, false)}</div>
+          <div class="breakdown-card"><h3>UTM 소스</h3>${breakdownRows(data.utmSources, false)}</div>
         </div>
 
         <h2>일별 상세</h2>
-        <div class="table-scroll"><table><thead><tr><th>날짜</th><th>방문수</th><th>클릭</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr></thead><tbody>${rows}</tbody></table></div>
+        <div class="table-scroll"><table><thead><tr><th>날짜</th><th>방문수</th><th>카톡클릭</th><th>폼클릭</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr></thead><tbody>${rows}</tbody></table></div>
 
-        <div class="note">※ 개인 식별 정보(IP, 정확한 위치, 쿠키 등)는 수집하지 않습니다. 국가/도시/기기/브라우저는 접속 시 자동으로 파악되는 대략적인 정보만 집계합니다.</div>
+        <div class="note">※ 개인 식별 정보(IP, 정확한 위치, 쿠키 등)는 수집하지 않습니다. 국가/도시/기기/브라우저/OS/유입경로 등은 접속 시 자동으로 파악되는 대략적인 정보만 집계합니다.</div>
       `;
     })
     .catch(() => {

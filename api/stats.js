@@ -29,8 +29,13 @@ export default async function handler(req, res) {
   const token = process.env.KV_REST_API_TOKEN;
 
   try {
-    const [clicks, visits, dwellTotal, dwellCount, s25, s50, s75, s100, countries, cities, devices, browsers] = await Promise.all([
+    const [
+      kakaoClicks, formClicks, visits, dwellTotal, dwellCount,
+      s25, s50, s75, s100,
+      countries, cities, devices, browsers, oses, screens, langs, sources, utmSources, utmCampaigns,
+    ] = await Promise.all([
       getDayCounts(url, token, "kakao_clicks"),
+      getDayCounts(url, token, "form_clicks"),
       getDayCounts(url, token, "visits"),
       getDayCounts(url, token, "dwell_total"),
       getDayCounts(url, token, "dwell_count"),
@@ -42,10 +47,17 @@ export default async function handler(req, res) {
       getDayCounts(url, token, "geo_city"),
       getDayCounts(url, token, "device"),
       getDayCounts(url, token, "browser"),
+      getDayCounts(url, token, "os"),
+      getDayCounts(url, token, "screen"),
+      getDayCounts(url, token, "lang"),
+      getDayCounts(url, token, "source"),
+      getDayCounts(url, token, "utm_source"),
+      getDayCounts(url, token, "utm_campaign"),
     ]);
 
     const days = new Set([
-      ...Object.keys(clicks), ...Object.keys(visits), ...Object.keys(dwellCount),
+      ...Object.keys(kakaoClicks), ...Object.keys(formClicks),
+      ...Object.keys(visits), ...Object.keys(dwellCount),
     ]);
 
     const byDay = {};
@@ -55,7 +67,8 @@ export default async function handler(req, res) {
       const dt = dwellTotal[d] || 0;
       byDay[d] = {
         visits: v,
-        clicks: clicks[d] || 0,
+        clicksKakao: kakaoClicks[d] || 0,
+        clicksForm: formClicks[d] || 0,
         avgDwellSec: dc ? Math.round(dt / dc) : 0,
         scroll25: v ? Math.round(((s25[d] || 0) / v) * 100) : 0,
         scroll50: v ? Math.round(((s50[d] || 0) / v) * 100) : 0,
@@ -64,7 +77,8 @@ export default async function handler(req, res) {
       };
     });
 
-    const total = Object.values(clicks).reduce((a, b) => a + b, 0);
+    const totalKakao = Object.values(kakaoClicks).reduce((a, b) => a + b, 0);
+    const totalForm = Object.values(formClicks).reduce((a, b) => a + b, 0);
 
     function toSortedList(obj, decode) {
       return Object.entries(obj)
@@ -73,12 +87,19 @@ export default async function handler(req, res) {
     }
 
     res.status(200).json({
-      total,
+      totalKakao,
+      totalForm,
       byDay,
       countries: toSortedList(countries, true),
       cities: toSortedList(cities, true),
       devices: toSortedList(devices, false),
       browsers: toSortedList(browsers, false),
+      oses: toSortedList(oses, false),
+      screens: toSortedList(screens, true),
+      langs: toSortedList(langs, true),
+      sources: toSortedList(sources, true),
+      utmSources: toSortedList(utmSources, true),
+      utmCampaigns: toSortedList(utmCampaigns, true),
     });
   } catch (e) {
     res.status(500).json({ error: "server error" });

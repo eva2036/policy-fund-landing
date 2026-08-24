@@ -6,12 +6,19 @@ export default async function handler(req, res) {
     return;
   }
 
+  let body = req.body;
+  if (typeof body === "string") {
+    try { body = JSON.parse(body); } catch (e) { body = {}; }
+  }
+  body = body || {};
+  const type = ["kakao", "form"].includes(body.type) ? body.type : "kakao";
+
   const url = process.env.KV_REST_API_URL;
   const token = process.env.KV_REST_API_TOKEN;
-  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" }); // YYYY-MM-DD
+  const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
 
   try {
-    await fetch(`${url}/incr/kakao_clicks:${today}`, {
+    await fetch(`${url}/incr/${type}_clicks:${today}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     res.status(200).json({ ok: true });
