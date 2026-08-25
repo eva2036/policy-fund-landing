@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+<title>[초안] 한국사업자성장연구소 — 타이포 중심 리디자인</title>
+<style>
+  :root {
+    --paper: #f0f0ee;
+    --paper-raise: #ffffff;
+    --ink: #16181c;
+    --ink-soft: #55585f;
+    --ink-faint: #93969d;
+    --line: #dcdcd8;
+    --accent: #2e6bff;
+    --accent-soft: #e4ecff;
+    --on-accent: #ffffff;
+    --card: #ffffff;
+    --danger: #d1453b;
+    --shadow: 0 2px 6px rgba(0,0,0,.05), 0 16px 32px -18px rgba(0,0,0,.14);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --paper: #121214; --paper-raise: #1a1b1e; --ink: #f0f0ee; --ink-soft: #b4b6bc; --ink-faint: #7c7f87;
+      --line: #2a2b2f; --accent: #6f96ff; --accent-soft: #1c2740; --on-accent: #0c1220; --card: #1a1b1e;
+      --danger: #ff8a80;
+      --shadow: 0 2px 6px rgba(0,0,0,.4), 0 16px 32px -18px rgba(0,0,0,.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #121214; --paper-raise: #1a1b1e; --ink: #f0f0ee; --ink-soft: #b4b6bc; --ink-faint: #7c7f87;
+    --line: #2a2b2f; --accent: #6f96ff; --accent-soft: #1c2740; --on-accent: #0c1220; --card: #1a1b1e;
+    --danger: #ff8a80;
+    --shadow: 0 2px 6px rgba(0,0,0,.4), 0 16px 32px -18px rgba(0,0,0,.6);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    line-height: 1.7; padding-bottom: 78px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+  .mono { font-family: ui-monospace, Consolas, monospace; }
+
+  .draft-flag {
+    background: #fff3d6; color: #7a5200; text-align: center; font-size: 12.5px; font-weight: 700;
+    padding: 8px 12px; border-bottom: 1px solid #f0d998;
+  }
+
+  nav { position: sticky; top: 0; z-index: 40; background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 24px; max-width: 720px; margin: 0 auto; }
+  .nav-brand { font-weight: 800; font-size: 14.5px; letter-spacing: -0.01em; }
+  .nav-cta { font-size: 12.5px; font-weight: 700; background: var(--ink); color: var(--paper); padding: 9px 16px; border-radius: 999px; text-decoration: none; border: none; cursor: pointer; font-family: inherit; }
+
+  /* ---- Typographic hero ---- */
+  .hero { padding: 64px 0 40px; text-align: center; }
+  .hero-eyebrow { font-family: ui-monospace, Consolas, monospace; font-size: 12px; letter-spacing: .12em; color: var(--ink-faint); text-transform: uppercase; margin-bottom: 22px; }
+  .hero h1 {
+    font-size: clamp(40px, 11vw, 68px); font-weight: 900; letter-spacing: -0.03em; line-height: 1.08;
+    margin: 0; text-wrap: balance;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero-brand { font-size: clamp(26px, 7vw, 40px); font-weight: 900; color: var(--accent); margin: 6px 0 0; letter-spacing: -0.02em; }
+
+  .photo-slot {
+    margin: 36px auto 0; width: min(360px, 70vw); aspect-ratio: 3/4;
+    border-radius: 20px; background: var(--paper-raise); border: 2px dashed var(--line);
+    display: flex; align-items: center; justify-content: center; color: var(--ink-faint);
+    font-size: 13px; text-align: center; padding: 20px; line-height: 1.6;
+  }
+
+  .hero-sub { font-size: 15.5px; color: var(--ink-soft); max-width: 40ch; margin: 28px auto 0; }
+
+  /* ---- Sticky bottom CTA (bar style, like reference) ---- */
+  .sticky-cta {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: var(--accent); color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 18px; font-weight: 800; font-size: 16px; text-decoration: none;
+    border: none; width: 100%; cursor: pointer; font-family: inherit;
+  }
+  .sticky-cta .arrow { font-size: 18px; transition: transform .15s ease; }
+  .sticky-cta:hover .arrow { transform: translateX(4px); }
+
+  /* ---- Guarantee stat strip (structure borrowed, claim left as placeholder) ---- */
+  section { padding: 48px 0; border-top: 1px solid var(--line); }
+  .eyebrow { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--accent); text-transform: uppercase; text-align: center; margin-bottom: 10px; }
+  h2 { font-size: clamp(22px, 6vw, 30px); font-weight: 800; text-align: center; margin: 0 0 30px; letter-spacing: -0.01em; text-wrap: balance; }
+
+  .stat-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; }
+  .stat-cell { background: var(--card); padding: 22px 16px; text-align: center; }
+  .stat-cell .n { font-family: ui-monospace, Consolas, monospace; font-size: 26px; font-weight: 800; color: var(--accent); }
+  .stat-cell .l { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+
+  .placeholder-note {
+    font-size: 12px; color: #7a5200; background: #fff3d6; border: 1px solid #f0d998;
+    border-radius: 8px; padding: 8px 12px; text-align: center; margin-top: 14px;
+  }
+
+  /* ---- Big number promise cards ---- */
+  .promise-list { display: flex; flex-direction: column; gap: 12px; }
+  .promise-item {
+    background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 22px 24px;
+    display: flex; gap: 18px; align-items: flex-start; box-shadow: var(--shadow);
+  }
+  .promise-item .num { font-family: ui-monospace, Consolas, monospace; font-weight: 900; font-size: 22px; color: var(--accent); flex-shrink: 0; }
+  .promise-item b { display: block; font-size: 16.5px; margin-bottom: 4px; }
+  .promise-item span { font-size: 14px; color: var(--ink-soft); }
+
+  footer { padding: 32px 0 40px; text-align: center; font-size: 12px; color: var(--ink-faint); }
+
+  /* ---- Lead capture modal / bottom sheet ---- */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(10, 10, 12, .5);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    opacity: 0; pointer-events: none; transition: opacity .18s ease;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+  .modal-panel {
+    background: var(--card); color: var(--ink);
+    border-radius: 20px; border: 1px solid var(--line); box-shadow: var(--shadow);
+    width: 100%; max-width: 380px; padding: 28px 26px 24px;
+    transform: translateY(12px) scale(.98); opacity: 0; transition: transform .2s ease, opacity .2s ease;
+  }
+  .modal-overlay.open .modal-panel { transform: translateY(0) scale(1); opacity: 1; }
+
+  .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .modal-title { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 4px; }
+  .modal-sub { font-size: 13px; color: var(--ink-soft); margin: 0; }
+  .modal-close {
+    background: none; border: none; color: var(--ink-faint); font-size: 20px; line-height: 1;
+    cursor: pointer; padding: 4px; flex-shrink: 0; font-family: inherit;
+  }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink-soft); margin-bottom: 6px; }
+  .field input[type="text"], .field input[type="tel"] {
+    width: 100%; font-size: 15px; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--paper); color: var(--ink);
+    font-family: inherit; outline: none;
+  }
+  .field input:focus { border-color: var(--accent); }
+
+  .consent-row {
+    display: flex; align-items: flex-start; gap: 8px; margin: 18px 0 16px;
+    font-size: 12px; color: var(--ink-soft); line-height: 1.55;
+  }
+  .consent-row input { margin-top: 2px; flex-shrink: 0; width: 15px; height: 15px; accent-color: var(--accent); }
+  .consent-detail { font-size: 11px; color: var(--ink-faint); margin: -10px 0 16px 23px; line-height: 1.6; }
+
+  .modal-submit {
+    width: 100%; padding: 14px; border-radius: 10px; border: none;
+    background: var(--accent); color: var(--on-accent); font-weight: 800; font-size: 15px;
+    cursor: pointer; font-family: inherit;
+  }
+  .modal-submit:disabled { opacity: .55; cursor: default; }
+
+  .form-msg { font-size: 12.5px; margin-top: 10px; text-align: center; min-height: 16px; }
+  .form-msg.error { color: var(--danger); }
+
+  .modal-success { text-align: center; padding: 12px 0 4px; }
+  .modal-success .check {
+    width: 48px; height: 48px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 16px;
+  }
+  .modal-success b { display: block; font-size: 16.5px; margin-bottom: 6px; }
+  .modal-success span { font-size: 13.5px; color: var(--ink-soft); }
+
+  /* Mobile: bottom sheet */
+  @media (max-width: 640px) {
+    .modal-overlay { align-items: flex-end; padding: 0; }
+    .modal-panel {
+      max-width: none; border-radius: 20px 20px 0 0; padding: 22px 20px 28px;
+      transform: translateY(100%); box-shadow: none;
+    }
+    .modal-overlay.open .modal-panel { transform: translateY(0); }
+    .sheet-handle { width: 36px; height: 4px; border-radius: 999px; background: var(--line); margin: 0 auto 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="draft-flag">🧪 이 페이지는 초안입니다 — 실제 사이트에는 반영되지 않았습니다</div>
+
+<nav>
+  <div class="nav-row">
+    <div class="nav-brand">한국사업자성장연구소</div>
+    <button class="nav-cta" type="button" data-open-modal>상담 신청</button>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="wrap">
+    <div class="hero-eyebrow">Policy Fund Consulting</div>
+    <h1>정책자금,<br><span class="accent">제가 직접</span> 찾아드립니다</h1>
+    <div class="hero-brand">한국사업자성장연구소</div>
+
+    <div class="photo-slot">
+      📷<br><br>실제 프로필 사진을<br>이 자리에 넣으시면<br>훨씬 신뢰감 있어 보여요<br><br>(정사각형에 가까운<br>인물 사진 권장)
+    </div>
+
+    <p class="hero-sub">화려한 문구 대신, 실제로 상담하는 사람의 얼굴을 먼저 보여드립니다.</p>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Track Record</div>
+    <h2>숫자로 보는 진행 현황</h2>
+    <div class="stat-strip">
+      <div class="stat-cell"><div class="n">-건</div><div class="l">누적 상담</div></div>
+      <div class="stat-cell"><div class="n">-%</div><div class="l">매칭 성공률</div></div>
+      <div class="stat-cell"><div class="n">-일</div><div class="l">평균 답변 소요</div></div>
+    </div>
+    <div class="placeholder-note">⚠ 실제 수치가 쌓이면 채워 넣는 자리입니다. 근거 없는 숫자는 표시광고법 위반 소지가 있어 비워뒀습니다.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">Our Promise</div>
+    <h2>이렇게 약속드립니다</h2>
+    <div class="promise-list">
+      <div class="promise-item"><div class="num">01</div><div><b>진행 전 비용 100% 사전 안내</b><span>계약서에 명시된 금액 외에는 청구하지 않습니다.</span></div></div>
+      <div class="promise-item"><div class="num">02</div><div><b>불가능한 케이스는 솔직히 말씀드립니다</b><span>가능성이 낮은 건은 억지로 진행하지 않고 그 이유를 설명해드립니다.</span></div></div>
+      <div class="promise-item"><div class="num">03</div><div><b>진행 상황 실시간 공유</b><span>카톡방을 통해 서류 접수부터 결과까지 투명하게 안내합니다.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    초안 v2 · 참고 사이트의 "볼드 타이포 + 인물사진 + 하단 고정 CTA" 구조만 차용, 문구·수치는 전부 자리표시자입니다.
+  </div>
+</footer>
+
+<button class="sticky-cta" type="button" data-open-modal>상담 신청하기 <span class="arrow">→</span></button>
+
+<div class="modal-overlay" id="leadModal">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+    <div class="sheet-handle"></div>
+    <div id="modalBody">
+      <div class="modal-head">
+        <div>
+          <p class="modal-title" id="leadModalTitle">무료 상담 신청</p>
+          <p class="modal-sub">이름과 연락처만 남겨주시면 순서대로 연락드려요.</p>
+        </div>
+        <button class="modal-close" type="button" data-close-modal aria-label="닫기">✕</button>
+      </div>
+
+      <form id="leadForm" novalidate>
+        <div class="field">
+          <label for="leadName">이름</label>
+          <input type="text" id="leadName" name="name" autocomplete="name" placeholder="홍길동" required>
+        </div>
+        <div class="field">
+          <label for="leadPhone">연락처</label>
+          <input type="tel" id="leadPhone" name="phone" autocomplete="tel" placeholder="010-1234-5678" required>
+        </div>
+
+        <label class="consent-row">
+          <input type="checkbox" id="leadConsent" name="consent" required>
+          <span>[필수] 개인정보 수집·이용에 동의합니다.</span>
+        </label>
+        <div class="consent-detail">
+          수집 항목: 이름, 연락처 · 수집 목적: 상담 신청 확인 및 연락 · 보유 기간: 상담 완료 후 즉시 파기(관계 법령에 따른 보관 의무가 있는 경우 해당 기간까지). 동의를 거부하실 수 있으며, 거부 시 상담 신청이 제한될 수 있습니다.
+        </div>
+
+        <button class="modal-submit" type="submit" id="leadSubmit">상담 신청하기</button>
+        <p class="form-msg" id="leadMsg"></p>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const overlay = document.getElementById("leadModal");
+  const modalBody = document.getElementById("modalBody");
+  const form = document.getElementById("leadForm");
+  const submitBtn = document.getElementById("leadSubmit");
+  const msg = document.getElementById("leadMsg");
+  const phoneInput = document.getElementById("leadPhone");
+
+  function openModal() {
+    overlay.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    overlay.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+
+  document.querySelectorAll("[data-open-modal]").forEach((el) => {
+    el.addEventListener("click", openModal);
+  });
+  document.querySelectorAll("[data-close-modal]").forEach((el) => {
+    el.addEventListener("click", closeModal);
+  });
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  phoneInput.addEventListener("input", () => {
+    let v = phoneInput.value.replace(/[^0-9]/g, "").slice(0, 11);
+    if (v.length > 3 && v.length <= 7) v = v.slice(0, 3) + "-" + v.slice(3);
+    else if (v.length > 7) v = v.slice(0, 3) + "-" + v.slice(3, 7) + "-" + v.slice(7);
+    phoneInput.value = v;
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    msg.textContent = "";
+    msg.classList.remove("error");
+
+    const name = document.getElementById("leadName").value.trim();
+    const phone = phoneInput.value.trim();
+    const consent = document.getElementById("leadConsent").checked;
+
+    if (!name) {
+      msg.textContent = "이름을 입력해주세요.";
+      msg.classList.add("error");
+      return;
+    }
+    if (!/^01[0-9]-?\d{3,4}-?\d{4}$/.test(phone.replace(/-/g, "").replace(/^(\d{3})(\d{3,4})(\d{4})$/, "$1-$2-$3")) && phone.replace(/[^0-9]/g, "").length < 9) {
+      msg.textContent = "연락처를 정확히 입력해주세요.";
+      msg.classList.add("error");
+      return;
+    }
+    if (!consent) {
+      msg.textContent = "개인정보 수집·이용에 동의해주세요.";
+      msg.classList.add("error");
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "접수 중...";
+
+    try {
+      const res = await fetch("/api/lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, phone, consent, source: "draft-v2" }),
+      });
+      if (!res.ok) throw new Error("request failed");
+
+      modalBody.innerHTML =
+        '<div class="modal-success">' +
+        '<div class="check">✓</div>' +
+        "<b>신청이 접수됐어요</b>" +
+        "<span>확인 후 순서대로 연락드리겠습니다.</span>" +
+        '<button class="modal-submit" type="button" style="margin-top:20px" data-close-modal>닫기</button>' +
+        "</div>";
+      modalBody.querySelector("[data-close-modal]").addEventListener("click", closeModal);
+    } catch (err) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "상담 신청하기";
+      msg.textContent = "접수 중 오류가 발생했어요. 잠시 후 다시 시도해주세요.";
+      msg.classList.add("error");
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
