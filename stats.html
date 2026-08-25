@@ -100,6 +100,28 @@
         ).join("");
       }
 
+      const visits = data.recentVisits || [];
+      let visitRows = visits.map(v => {
+        const timeStr = new Date(v.t).toLocaleString("ko-KR", {
+          timeZone: "Asia/Seoul", month: "2-digit", day: "2-digit",
+          hour: "2-digit", minute: "2-digit", hour12: false,
+        });
+        const mm = String(Math.floor((v.dwell || 0) / 60)).padStart(2, "0");
+        const ss = String((v.dwell || 0) % 60).padStart(2, "0");
+        const loc = (v.city && v.city !== "unknown") ? `${v.country} ${v.city}` : (v.country || "unknown");
+        return `<tr>
+          <td>${timeStr}</td>
+          <td>${v.scroll || 0}%</td>
+          <td>${mm}:${ss}</td>
+          <td>${L(v.source || "unknown")}</td>
+          <td>${L(v.device || "unknown")}</td>
+          <td>${L(v.browser || "unknown")}</td>
+          <td>${L(v.os || "unknown")}</td>
+          <td>${loc}</td>
+        </tr>`;
+      }).join("");
+      if (!visits.length) visitRows = '<tr><td colspan="8" class="empty">아직 기록이 없습니다</td></tr>';
+
       el.innerHTML = `
         <div class="stat-row">
           <div class="stat-card"><div class="n">${totalVisits}</div><div class="l">누적 방문수</div></div>
@@ -131,7 +153,10 @@
         <h2>일별 상세</h2>
         <div class="table-scroll"><table><thead><tr><th>날짜</th><th>방문수</th><th>카톡클릭</th><th>폼클릭</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr></thead><tbody>${rows}</tbody></table></div>
 
-        <div class="note">※ 개인 식별 정보(IP, 정확한 위치, 쿠키 등)는 수집하지 않습니다. 국가/도시/기기/브라우저/OS/유입경로 등은 접속 시 자동으로 파악되는 대략적인 정보만 집계합니다.</div>
+        <h2>개별 방문 기록 (접속 시간순, 최근 ${(data.recentVisits || []).length}건)</h2>
+        <div class="table-scroll"><table><thead><tr><th>접속시간</th><th>스크롤 도달</th><th>체류시간</th><th>유입경로</th><th>기기</th><th>브라우저</th><th>OS</th><th>위치</th></tr></thead><tbody>${visitRows}</tbody></table></div>
+
+        <div class="note">※ 개인 식별 정보(IP, 정확한 위치, 쿠키 등)는 수집하지 않습니다. 국가/도시/기기/브라우저/OS/유입경로 등은 접속 시 자동으로 파악되는 대략적인 정보만 집계·기록합니다. 개별 방문 기록도 특정 개인을 식별할 수 없는 익명 데이터입니다.</div>
       `;
     })
     .catch(() => {

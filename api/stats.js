@@ -1,3 +1,33 @@
+async function redisCmd(url, token, cmd) {
+  const r = await fetch(url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(cmd),
+  });
+  return r.json();
+}
+
+async function getVisitLog(url, token, days) {
+  const entries = [];
+  await Promise.all(
+    days.map(async (d) => {
+      try {
+        const r = await redisCmd(url, token, ["LRANGE", `visit_log:${d}`, "0", "-1"]);
+        const list = r.result || [];
+        list.forEach((raw) => {
+          try {
+            const obj = JSON.parse(raw);
+            obj.date = d;
+            entries.push(obj);
+          } catch (e) {}
+        });
+      } catch (e) {}
+    })
+  );
+  entries.sort((a, b) => b.t - a.t);
+  return entries.slice(0, 150);
+}
+
 async function getDayCounts(url, token, prefix) {
   const keysRes = await fetch(`${url}/keys/${prefix}:*`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -80,6 +110,8 @@ export default async function handler(req, res) {
     const totalKakao = Object.values(kakaoClicks).reduce((a, b) => a + b, 0);
     const totalForm = Object.values(formClicks).reduce((a, b) => a + b, 0);
 
+    const recentVisits = await getVisitLog(url, token, Array.from(days));
+
     function toSortedList(obj, decode) {
       return Object.entries(obj)
         .map(([k, v]) => [decode ? decodeURIComponent(k) : k, v])
@@ -100,6 +132,7 @@ export default async function handler(req, res) {
       sources: toSortedList(sources, true),
       utmSources: toSortedList(utmSources, true),
       utmCampaigns: toSortedList(utmCampaigns, true),
+      recentVisits,
     });
   } catch (e) {
     res.status(500).json({ error: "server error" });

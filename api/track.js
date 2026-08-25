@@ -63,6 +63,12 @@ export default async function handler(req, res) {
 
   const maxScroll = Math.min(100, Math.max(0, parseInt(body.maxScroll, 10) || 0));
   const dwell = Math.min(3600, Math.max(0, parseInt(body.dwell, 10) || 0));
+  const now = Date.now();
+  const startAtRaw = parseInt(body.startAt, 10);
+  // 클라이언트가 보낸 접속 시작 시각을 우선 사용, 비정상 값이면 서버 도착시각 - 체류시간으로 추정
+  const arrivedAt = (startAtRaw && Math.abs(now - startAtRaw) < 24 * 3600 * 1000)
+    ? startAtRaw
+    : now - dwell * 1000;
 
   // 대략적인 지역(국가/도시)만 사용 — 원본 IP는 저장하지 않음
   const country = req.headers["x-vercel-ip-country"] || "unknown";
@@ -83,6 +89,14 @@ export default async function handler(req, res) {
   const token = process.env.KV_REST_API_TOKEN;
   const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const auth = { Authorization: `Bearer ${token}` };
+
+  function redisCmd(cmd) {
+    return fetch(url, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify(cmd),
+    });
+  }
 
   const thresholds = [25, 50, 75, 100].filter((t) => maxScroll >= t);
   const ops = [
@@ -107,6 +121,21 @@ export default async function handler(req, res) {
   if (utmCampaign) {
     ops.push(fetch(`${url}/incr/utm_campaign:${encodeURIComponent(utmCampaign)}`, { headers: auth }));
   }
+
+  // 방문자 1건씩 개별 기록 (익명, 개인식별정보 없음) — 통계 페이지에서 방문별로 표시하기 위함
+  const record = JSON.stringify({
+    t: arrivedAt,
+    scroll: maxScroll,
+    dwell: dwell,
+    country: country,
+    city: city,
+    device: device,
+    browser: browser,
+    os: os,
+    source: source,
+  });
+  ops.push(redisCmd(["LPUSH", `visit_log:${today}`, record]));
+  ops.push(redisCmd(["LTRIM", `visit_log:${today}`, "0", "299"]));
 
   try {
     await Promise.allSettled(ops);
