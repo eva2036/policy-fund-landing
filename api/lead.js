@@ -47,8 +47,9 @@ export default async function handler(req, res) {
     return;
   }
 
-  const url = process.env.SUPABASE_URL;
-  const anonKey = process.env.SUPABASE_ANON_KEY;
+  const clean = (v) => (v || "").replace(/^\uFEFF/, "").trim();
+  const url = clean(process.env.SUPABASE_URL);
+  const anonKey = clean(process.env.SUPABASE_ANON_KEY);
 
   try {
     const insertRes = await fetch(`${url}/rest/v1/leads`, {
@@ -71,6 +72,6 @@ export default async function handler(req, res) {
 
     res.status(200).json({ ok: true });
   } catch (e) {
-    res.status(500).json({ error: "server error", debug: String(e && e.message || e) });
+    res.status(500).json({ error: "server error" });
   }
 }
