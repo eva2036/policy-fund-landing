@@ -238,7 +238,7 @@
   .modal-panel {
     background: var(--card); color: var(--ink);
     border-radius: 20px; border: 1px solid var(--line); box-shadow: var(--shadow);
-    width: 100%; max-width: 420px; padding: 0; overflow: hidden;
+    width: 100%; max-width: 480px; padding: 0; overflow: hidden;
     transform: translateY(12px) scale(.98); opacity: 0; transition: transform .2s ease, opacity .2s ease;
     max-height: 90vh; overflow-y: auto;
   }
@@ -270,17 +270,17 @@
   .modal-hero-bullets li.highlight { color: #ffd23f; font-weight: 700; }
   .modal-hero-bullets li.highlight::before { color: #ffd23f; }
 
-  .modal-hero-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 110px; }
+  .modal-hero-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 140px; }
   .modal-badge { text-align: center; }
   .modal-badge-eyebrow { font-size: 10.5px; color: #9fb0e0; font-weight: 700; }
   .modal-badge-big { font-size: 20px; font-weight: 900; color: #fff; letter-spacing: -0.02em; line-height: 1.1; }
   .modal-badge-pill { font-size: 10px; font-weight: 700; color: #0c1220; background: #f1f3fb; border-radius: 999px; padding: 2px 8px; margin-top: 3px; display: inline-block; }
   .modal-photo {
-    width: 96px; height: 96px; border-radius: 50%; object-fit: cover; object-position: top center;
+    width: 128px; height: 128px; border-radius: 50%; object-fit: cover; object-position: top center;
     border: 1.5px solid rgba(255,255,255,.35); display: block;
   }
-  .modal-photo-name { font-size: 11px; text-align: center; color: #cdd4ea; line-height: 1.4; }
-  .modal-photo-name b { display: block; color: #f1f3fb; font-size: 11.5px; }
+  .modal-photo-name { font-size: 11px; text-align: center; color: #cdd4ea; line-height: 1.4; white-space: nowrap; }
+  .modal-photo-name b { display: block; color: #f1f3fb; font-size: 11.5px; white-space: nowrap; }
 
   /* ---- Form body ---- */
   .modal-form-body { padding: 22px 22px 24px; }
@@ -340,8 +340,9 @@
   }
   @media (max-width: 380px) {
     .modal-hero-title { font-size: 18px; }
-    .modal-hero-right { width: 92px; }
-    .modal-photo { width: 78px; height: 78px; }
+    .modal-hero-right { width: 112px; }
+    .modal-photo { width: 92px; height: 92px; }
+    .modal-photo-name, .modal-photo-name b { font-size: 10px; }
   }
 </style>
 </head>
@@ -573,9 +574,21 @@
   const msg = document.getElementById("leadMsg");
   const phoneInput = document.getElementById("leadPhone");
 
+  function trackClick(type) {
+    try {
+      fetch("/api/click", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: type, version: "v2" }),
+        keepalive: true,
+      });
+    } catch (e) {}
+  }
+
   function openModal() {
     overlay.classList.add("open");
     document.body.style.overflow = "hidden";
+    trackClick("consult");
   }
   function closeModal() {
     overlay.classList.remove("open");
@@ -685,6 +698,7 @@
       sent = true;
       var dwell = Math.round((Date.now() - startTime) / 1000);
       var payload = JSON.stringify({
+        version: "v2",
         maxScroll: maxScroll,
         dwell: dwell,
         startAt: startTime,

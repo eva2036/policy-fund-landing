@@ -90,6 +90,10 @@ export default async function handler(req, res) {
   const today = new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Seoul" });
   const auth = { Authorization: `Bearer ${token}` };
 
+  // V1.0 -> V2.0 승격(2026-08-26) 이후부터 버전별로 통계를 구분해서 비교할 수 있도록 키 접두사를 분리.
+  // 버전 태그가 없는 과거 페이지는 계속 기존(레거시=V1) 키를 사용.
+  const p = body.version === "v2" ? "v2_" : "";
+
   function redisCmd(cmd) {
     return fetch(url, {
       method: "POST",
@@ -100,26 +104,26 @@ export default async function handler(req, res) {
 
   const thresholds = [25, 50, 75, 100].filter((t) => maxScroll >= t);
   const ops = [
-    fetch(`${url}/incr/visits:${today}`, { headers: auth }),
-    fetch(`${url}/incrby/dwell_total:${today}/${dwell}`, { headers: auth }),
-    fetch(`${url}/incr/dwell_count:${today}`, { headers: auth }),
-    fetch(`${url}/incr/geo_country:${encodeURIComponent(country)}`, { headers: auth }),
-    fetch(`${url}/incr/device:${device}`, { headers: auth }),
-    fetch(`${url}/incr/browser:${browser}`, { headers: auth }),
-    fetch(`${url}/incr/os:${os}`, { headers: auth }),
-    fetch(`${url}/incr/source:${encodeURIComponent(source)}`, { headers: auth }),
-    fetch(`${url}/incr/screen:${encodeURIComponent(screen)}`, { headers: auth }),
-    fetch(`${url}/incr/lang:${encodeURIComponent(lang)}`, { headers: auth }),
-    ...thresholds.map((t) => fetch(`${url}/incr/scroll_${t}:${today}`, { headers: auth })),
+    fetch(`${url}/incr/${p}visits:${today}`, { headers: auth }),
+    fetch(`${url}/incrby/${p}dwell_total:${today}/${dwell}`, { headers: auth }),
+    fetch(`${url}/incr/${p}dwell_count:${today}`, { headers: auth }),
+    fetch(`${url}/incr/${p}geo_country:${encodeURIComponent(country)}`, { headers: auth }),
+    fetch(`${url}/incr/${p}device:${device}`, { headers: auth }),
+    fetch(`${url}/incr/${p}browser:${browser}`, { headers: auth }),
+    fetch(`${url}/incr/${p}os:${os}`, { headers: auth }),
+    fetch(`${url}/incr/${p}source:${encodeURIComponent(source)}`, { headers: auth }),
+    fetch(`${url}/incr/${p}screen:${encodeURIComponent(screen)}`, { headers: auth }),
+    fetch(`${url}/incr/${p}lang:${encodeURIComponent(lang)}`, { headers: auth }),
+    ...thresholds.map((t) => fetch(`${url}/incr/${p}scroll_${t}:${today}`, { headers: auth })),
   ];
   if (city !== "unknown") {
-    ops.push(fetch(`${url}/incr/geo_city:${encodeURIComponent(country + " " + city)}`, { headers: auth }));
+    ops.push(fetch(`${url}/incr/${p}geo_city:${encodeURIComponent(country + " " + city)}`, { headers: auth }));
   }
   if (utmSource) {
-    ops.push(fetch(`${url}/incr/utm_source:${encodeURIComponent(utmSource)}`, { headers: auth }));
+    ops.push(fetch(`${url}/incr/${p}utm_source:${encodeURIComponent(utmSource)}`, { headers: auth }));
   }
   if (utmCampaign) {
-    ops.push(fetch(`${url}/incr/utm_campaign:${encodeURIComponent(utmCampaign)}`, { headers: auth }));
+    ops.push(fetch(`${url}/incr/${p}utm_campaign:${encodeURIComponent(utmCampaign)}`, { headers: auth }));
   }
 
   // 방문자 1건씩 개별 기록 (익명, 개인식별정보 없음) — 통계 페이지에서 방문별로 표시하기 위함
@@ -134,8 +138,8 @@ export default async function handler(req, res) {
     os: os,
     source: source,
   });
-  ops.push(redisCmd(["LPUSH", `visit_log:${today}`, record]));
-  ops.push(redisCmd(["LTRIM", `visit_log:${today}`, "0", "299"]));
+  ops.push(redisCmd(["LPUSH", `${p}visit_log:${today}`, record]));
+  ops.push(redisCmd(["LTRIM", `${p}visit_log:${today}`, "0", "299"]));
 
   try {
     await Promise.allSettled(ops);

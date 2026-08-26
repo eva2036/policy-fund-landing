@@ -9,8 +9,14 @@
   body { font-family: -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif; background: #f5f6f8; color: #17213a; margin: 0; padding: 40px 20px; }
   .wrap { max-width: 820px; margin: 0 auto; }
   h1 { font-size: 22px; margin-bottom: 4px; }
-  .sub { color: #838da3; font-size: 13px; margin-bottom: 28px; }
+  .sub { color: #838da3; font-size: 13px; margin-bottom: 20px; }
   h2 { font-size: 15px; margin: 32px 0 12px; color: #4e5872; }
+  .tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+  .tab-btn {
+    font-size: 13.5px; font-weight: 700; padding: 9px 18px; border-radius: 999px; border: 1px solid #dde1e8;
+    background: #fff; color: #4e5872; cursor: pointer; font-family: inherit;
+  }
+  .tab-btn.active { background: #17213a; color: #fff; border-color: #17213a; }
   .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
   .stat-card { background: #17213a; color: #fff; border-radius: 14px; padding: 18px 20px; }
   .stat-card .n { font-size: 26px; font-weight: 800; font-family: ui-monospace, Consolas, monospace; }
@@ -42,7 +48,11 @@
 <body>
 <div class="wrap">
   <h1>📊 방문자 통계</h1>
-  <div class="sub">비공개 페이지 · 본인만 확인 가능</div>
+  <div class="sub">비공개 페이지 · 본인만 확인 가능 · V1.0(승격 전)과 V2.0(현재)을 나눠서 비교합니다</div>
+  <div class="tabs">
+    <button class="tab-btn" id="tabV2" type="button">V2.0 (현재)</button>
+    <button class="tab-btn" id="tabV1" type="button">V1.0 (승격 전)</button>
+  </div>
   <div id="content">불러오는 중...</div>
 </div>
 <script>
@@ -57,107 +67,139 @@
     unknown: "알 수 없음"
   };
   const L = (k) => labels[k] || k;
+  let statsData = null;
+  let activeTab = "v2";
+
+  function breakdownRows(list, decodeLabel) {
+    if (!list || !list.length) return '<div class="breakdown-row"><span>데이터 없음</span></div>';
+    return list.slice(0, 8).map(([k, v]) =>
+      `<div class="breakdown-row"><span>${decodeLabel ? L(k) : k}</span><span class="v">${v}</span></div>`
+    ).join("");
+  }
+
+  function render(data, version) {
+    const el = document.getElementById("content");
+    if (!data) {
+      el.innerHTML = '<p class="empty">데이터가 없습니다</p>';
+      return;
+    }
+    const isV2 = version === "v2";
+    const days = Object.keys(data.byDay).sort();
+    const totalVisits = data.totalVisits || 0;
+
+    const maxVisits = Math.max(1, ...days.map(d => data.byDay[d].visits));
+    const chartCols = days.map(d => {
+      const v = data.byDay[d].visits;
+      const h = Math.max(2, Math.round((v / maxVisits) * 100));
+      const short = d.slice(5);
+      return `<div class="chart-col"><div class="chart-n">${v}</div><div class="chart-bar" style="height:${h}px"></div><div class="chart-d">${short}</div></div>`;
+    }).join("");
+
+    let rows = [...days].reverse().map(d => {
+      const r = data.byDay[d];
+      const mm = String(Math.floor(r.avgDwellSec / 60)).padStart(2, "0");
+      const ss = String(r.avgDwellSec % 60).padStart(2, "0");
+      const clickCell = isV2
+        ? `<td class="count">${r.clicksConsult || 0}</td>`
+        : `<td class="count">${r.clicksKakao}</td><td class="count">${r.clicksForm}</td>`;
+      return `<tr>
+        <td>${d}</td>
+        <td>${r.visits}</td>
+        ${clickCell}
+        <td>${mm}:${ss}</td>
+        <td>${r.scroll25}% / ${r.scroll50}% / ${r.scroll75}% / ${r.scroll100}%</td>
+      </tr>`;
+    }).join("");
+    const colCount = isV2 ? 5 : 6;
+    if (!days.length) rows = `<tr><td colspan="${colCount}" class="empty">아직 기록이 없습니다</td></tr>`;
+
+    const visits = data.recentVisits || [];
+    let visitRows = visits.map(v => {
+      const timeStr = new Date(v.t).toLocaleString("ko-KR", {
+        timeZone: "Asia/Seoul", month: "2-digit", day: "2-digit",
+        hour: "2-digit", minute: "2-digit", hour12: false,
+      });
+      const mm = String(Math.floor((v.dwell || 0) / 60)).padStart(2, "0");
+      const ss = String((v.dwell || 0) % 60).padStart(2, "0");
+      const loc = (v.city && v.city !== "unknown") ? `${v.country} ${v.city}` : (v.country || "unknown");
+      return `<tr>
+        <td>${timeStr}</td>
+        <td>${v.scroll || 0}%</td>
+        <td>${mm}:${ss}</td>
+        <td>${L(v.source || "unknown")}</td>
+        <td>${L(v.device || "unknown")}</td>
+        <td>${L(v.browser || "unknown")}</td>
+        <td>${L(v.os || "unknown")}</td>
+        <td>${loc}</td>
+      </tr>`;
+    }).join("");
+    if (!visits.length) visitRows = '<tr><td colspan="8" class="empty">아직 기록이 없습니다</td></tr>';
+
+    const statCards = isV2
+      ? `<div class="stat-card"><div class="n">${totalVisits}</div><div class="l">누적 방문수</div></div>
+         <div class="stat-card"><div class="n">${data.totalConsult || 0}</div><div class="l">상담 신청하기 클릭수</div></div>
+         <div class="stat-card"><div class="n">${days.length}</div><div class="l">집계 일수</div></div>`
+      : `<div class="stat-card"><div class="n">${totalVisits}</div><div class="l">누적 방문수</div></div>
+         <div class="stat-card"><div class="n">${data.totalKakao}</div><div class="l">카톡 클릭수</div></div>
+         <div class="stat-card"><div class="n">${data.totalForm}</div><div class="l">상담신청(폼) 클릭수</div></div>`;
+
+    const dailyHead = isV2
+      ? `<tr><th>날짜</th><th>방문수</th><th>상담신청 클릭</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr>`
+      : `<tr><th>날짜</th><th>방문수</th><th>카톡클릭</th><th>폼클릭</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr>`;
+
+    el.innerHTML = `
+      <div class="stat-row">${statCards}</div>
+
+      <h2>방문자 수 추이</h2>
+      <div class="chart">${chartCols || '<div class="empty">데이터 없음</div>'}</div>
+
+      <h2>유입경로</h2>
+      <div class="breakdown-grid">
+        <div class="breakdown-card"><h3>어디서 들어왔는지</h3>${breakdownRows(data.sources, true)}</div>
+        <div class="breakdown-card"><h3>UTM 캠페인</h3>${breakdownRows(data.utmCampaigns, false)}</div>
+      </div>
+
+      <h2>방문자 정보 (누적, 대략적인 위치·기기 기준)</h2>
+      <div class="breakdown-grid">
+        <div class="breakdown-card"><h3>국가</h3>${breakdownRows(data.countries, true)}</div>
+        <div class="breakdown-card"><h3>도시</h3>${breakdownRows(data.cities, false)}</div>
+        <div class="breakdown-card"><h3>기기</h3>${breakdownRows(data.devices, true)}</div>
+        <div class="breakdown-card"><h3>OS</h3>${breakdownRows(data.oses, true)}</div>
+        <div class="breakdown-card"><h3>브라우저</h3>${breakdownRows(data.browsers, true)}</div>
+        <div class="breakdown-card"><h3>화면 크기</h3>${breakdownRows(data.screens, false)}</div>
+        <div class="breakdown-card"><h3>언어</h3>${breakdownRows(data.langs, false)}</div>
+        <div class="breakdown-card"><h3>UTM 소스</h3>${breakdownRows(data.utmSources, false)}</div>
+      </div>
+
+      <h2>일별 상세</h2>
+      <div class="table-scroll"><table><thead>${dailyHead}</thead><tbody>${rows}</tbody></table></div>
+
+      <h2>개별 방문 기록 (접속 시간순, 최근 ${(data.recentVisits || []).length}건)</h2>
+      <div class="table-scroll"><table><thead><tr><th>접속시간</th><th>스크롤 도달</th><th>체류시간</th><th>유입경로</th><th>기기</th><th>브라우저</th><th>OS</th><th>위치</th></tr></thead><tbody>${visitRows}</tbody></table></div>
+
+      <div class="note">※ 개인 식별 정보(IP, 정확한 위치, 쿠키 등)는 수집하지 않습니다. 국가/도시/기기/브라우저/OS/유입경로 등은 접속 시 자동으로 파악되는 대략적인 정보만 집계·기록합니다. 개별 방문 기록도 특정 개인을 식별할 수 없는 익명 데이터입니다.${isV2 ? "" : " V1.0은 승격 전 데이터로, 더 이상 새로 쌓이지 않습니다."}</div>
+    `;
+  }
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById("tabV2").classList.toggle("active", tab === "v2");
+    document.getElementById("tabV1").classList.toggle("active", tab === "v1");
+    if (statsData) render(statsData[tab], tab);
+  }
+
+  document.getElementById("tabV2").addEventListener("click", () => switchTab("v2"));
+  document.getElementById("tabV1").addEventListener("click", () => switchTab("v1"));
 
   fetch("/api/stats?key=" + encodeURIComponent(key))
     .then(r => r.json())
     .then(data => {
-      const el = document.getElementById("content");
       if (data.error) {
-        el.innerHTML = '<p class="err">인증 실패: URL 뒤에 ?key=본인비밀키 를 붙여주세요.</p>';
+        document.getElementById("content").innerHTML = '<p class="err">인증 실패: URL 뒤에 ?key=본인비밀키 를 붙여주세요.</p>';
         return;
       }
-
-      const days = Object.keys(data.byDay).sort();
-      const totalVisits = days.reduce((a, d) => a + data.byDay[d].visits, 0);
-
-      const maxVisits = Math.max(1, ...days.map(d => data.byDay[d].visits));
-      const chartCols = days.map(d => {
-        const v = data.byDay[d].visits;
-        const h = Math.max(2, Math.round((v / maxVisits) * 100));
-        const short = d.slice(5);
-        return `<div class="chart-col"><div class="chart-n">${v}</div><div class="chart-bar" style="height:${h}px"></div><div class="chart-d">${short}</div></div>`;
-      }).join("");
-
-      let rows = [...days].reverse().map(d => {
-        const r = data.byDay[d];
-        const mm = String(Math.floor(r.avgDwellSec / 60)).padStart(2, "0");
-        const ss = String(r.avgDwellSec % 60).padStart(2, "0");
-        return `<tr>
-          <td>${d}</td>
-          <td>${r.visits}</td>
-          <td class="count">${r.clicksKakao}</td>
-          <td class="count">${r.clicksForm}</td>
-          <td>${mm}:${ss}</td>
-          <td>${r.scroll25}% / ${r.scroll50}% / ${r.scroll75}% / ${r.scroll100}%</td>
-        </tr>`;
-      }).join("");
-      if (!days.length) rows = '<tr><td colspan="6" class="empty">아직 기록이 없습니다</td></tr>';
-
-      function breakdownRows(list, decodeLabel) {
-        if (!list.length) return '<div class="breakdown-row"><span>데이터 없음</span></div>';
-        return list.slice(0, 8).map(([k, v]) =>
-          `<div class="breakdown-row"><span>${decodeLabel ? L(k) : k}</span><span class="v">${v}</span></div>`
-        ).join("");
-      }
-
-      const visits = data.recentVisits || [];
-      let visitRows = visits.map(v => {
-        const timeStr = new Date(v.t).toLocaleString("ko-KR", {
-          timeZone: "Asia/Seoul", month: "2-digit", day: "2-digit",
-          hour: "2-digit", minute: "2-digit", hour12: false,
-        });
-        const mm = String(Math.floor((v.dwell || 0) / 60)).padStart(2, "0");
-        const ss = String((v.dwell || 0) % 60).padStart(2, "0");
-        const loc = (v.city && v.city !== "unknown") ? `${v.country} ${v.city}` : (v.country || "unknown");
-        return `<tr>
-          <td>${timeStr}</td>
-          <td>${v.scroll || 0}%</td>
-          <td>${mm}:${ss}</td>
-          <td>${L(v.source || "unknown")}</td>
-          <td>${L(v.device || "unknown")}</td>
-          <td>${L(v.browser || "unknown")}</td>
-          <td>${L(v.os || "unknown")}</td>
-          <td>${loc}</td>
-        </tr>`;
-      }).join("");
-      if (!visits.length) visitRows = '<tr><td colspan="8" class="empty">아직 기록이 없습니다</td></tr>';
-
-      el.innerHTML = `
-        <div class="stat-row">
-          <div class="stat-card"><div class="n">${totalVisits}</div><div class="l">누적 방문수</div></div>
-          <div class="stat-card"><div class="n">${data.totalKakao}</div><div class="l">카톡 클릭수</div></div>
-          <div class="stat-card"><div class="n">${data.totalForm}</div><div class="l">상담신청(폼) 클릭수</div></div>
-        </div>
-
-        <h2>방문자 수 추이</h2>
-        <div class="chart">${chartCols || '<div class="empty">데이터 없음</div>'}</div>
-
-        <h2>유입경로</h2>
-        <div class="breakdown-grid">
-          <div class="breakdown-card"><h3>어디서 들어왔는지</h3>${breakdownRows(data.sources, true)}</div>
-          <div class="breakdown-card"><h3>UTM 캠페인</h3>${breakdownRows(data.utmCampaigns, false)}</div>
-        </div>
-
-        <h2>방문자 정보 (누적, 대략적인 위치·기기 기준)</h2>
-        <div class="breakdown-grid">
-          <div class="breakdown-card"><h3>국가</h3>${breakdownRows(data.countries, true)}</div>
-          <div class="breakdown-card"><h3>도시</h3>${breakdownRows(data.cities, false)}</div>
-          <div class="breakdown-card"><h3>기기</h3>${breakdownRows(data.devices, true)}</div>
-          <div class="breakdown-card"><h3>OS</h3>${breakdownRows(data.oses, true)}</div>
-          <div class="breakdown-card"><h3>브라우저</h3>${breakdownRows(data.browsers, true)}</div>
-          <div class="breakdown-card"><h3>화면 크기</h3>${breakdownRows(data.screens, false)}</div>
-          <div class="breakdown-card"><h3>언어</h3>${breakdownRows(data.langs, false)}</div>
-          <div class="breakdown-card"><h3>UTM 소스</h3>${breakdownRows(data.utmSources, false)}</div>
-        </div>
-
-        <h2>일별 상세</h2>
-        <div class="table-scroll"><table><thead><tr><th>날짜</th><th>방문수</th><th>카톡클릭</th><th>폼클릭</th><th>평균체류</th><th>스크롤 도달률(25/50/75/100%)</th></tr></thead><tbody>${rows}</tbody></table></div>
-
-        <h2>개별 방문 기록 (접속 시간순, 최근 ${(data.recentVisits || []).length}건)</h2>
-        <div class="table-scroll"><table><thead><tr><th>접속시간</th><th>스크롤 도달</th><th>체류시간</th><th>유입경로</th><th>기기</th><th>브라우저</th><th>OS</th><th>위치</th></tr></thead><tbody>${visitRows}</tbody></table></div>
-
-        <div class="note">※ 개인 식별 정보(IP, 정확한 위치, 쿠키 등)는 수집하지 않습니다. 국가/도시/기기/브라우저/OS/유입경로 등은 접속 시 자동으로 파악되는 대략적인 정보만 집계·기록합니다. 개별 방문 기록도 특정 개인을 식별할 수 없는 익명 데이터입니다.</div>
-      `;
+      statsData = data;
+      switchTab("v2");
     })
     .catch(() => {
       document.getElementById("content").innerHTML = '<p class="err">불러오기 실패</p>';
