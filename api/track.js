@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+
 function detectDevice(ua) {
   if (/iPad|Tablet/i.test(ua)) return "tablet";
   if (/Mobile|Android|iPhone/i.test(ua)) return "mobile";
@@ -100,6 +102,26 @@ export default async function handler(req, res) {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify(cmd),
     });
+  }
+
+  // 같은 IP의 중복 집계 방지: 원본 IP는 저장하지 않고, 비밀 salt로 해시한 값만 24시간 동안 임시로 기억해서
+  // "오늘 이미 방문한 IP인지"만 판단한다 (해시는 되돌릴 수 없고, 자동으로 만료됨).
+  const ipRaw = (req.headers["x-forwarded-for"] || req.headers["x-real-ip"] || "").split(",")[0].trim();
+  const salt = process.env.STATS_SECRET || "kbgl-dedup-fallback-salt";
+  if (ipRaw) {
+    const ipHash = createHash("sha256").update(`${ipRaw}:${salt}`).digest("hex").slice(0, 32);
+    const dedupKey = `${p}seen_ip:${today}:${ipHash}`;
+    try {
+      const setRes = await redisCmd(["SET", dedupKey, "1", "NX", "EX", "90000"]);
+      const setData = await setRes.json();
+      if (setData.result !== "OK") {
+        // 오늘 이미 집계된 IP — 중복 집계하지 않고 조용히 종료
+        res.status(200).json({ ok: true, deduped: true });
+        return;
+      }
+    } catch (e) {
+      // dedup 체크 실패 시에도 집계 자체는 계속 진행 (안전한 기본 동작)
+    }
   }
 
   const thresholds = [25, 50, 75, 100].filter((t) => maxScroll >= t);
