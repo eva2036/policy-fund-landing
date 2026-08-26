@@ -159,6 +159,8 @@
   .modal-hero-bullets { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .modal-hero-bullets li { font-size: 12.5px; color: #cdd4ea; padding-left: 16px; position: relative; line-height: 1.5; }
   .modal-hero-bullets li::before { content: "-"; position: absolute; left: 0; color: #7d90c4; }
+  .modal-hero-bullets li.highlight { color: #ffd23f; font-weight: 700; }
+  .modal-hero-bullets li.highlight::before { color: #ffd23f; }
 
   .modal-hero-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 10px; width: 110px; }
   .modal-badge { text-align: center; }
@@ -291,7 +293,7 @@
             <li>진행 전 비용 100% 사전 안내</li>
             <li>불가능한 케이스는 솔직히 안내</li>
             <li>진행 상황 카톡으로 실시간 공유</li>
-            <li>실패 시 100% 환불, 성공보수 없음</li>
+            <li class="highlight">실패 시 100% 환불, 성공보수 없음</li>
           </ul>
         </div>
         <div class="modal-hero-right">
