@@ -3,9 +3,11 @@ function isValidPhone(phone) {
   return digits.length >= 9 && digits.length <= 11 && digits.startsWith("0");
 }
 
+const clean = (v) => (v || "").replace(/^\uFEFF/, "").trim();
+
 async function sendNotificationEmail({ name, phone, source }) {
-  const apiKey = process.env.RESEND_API_KEY;
-  const to = process.env.LEAD_NOTIFY_EMAIL;
+  const apiKey = clean(process.env.RESEND_API_KEY);
+  const to = clean(process.env.LEAD_NOTIFY_EMAIL);
   if (!apiKey || !to) return { skipped: true };
 
   const res = await fetch("https://api.resend.com/emails", {
@@ -47,7 +49,6 @@ export default async function handler(req, res) {
     return;
   }
 
-  const clean = (v) => (v || "").replace(/^\uFEFF/, "").trim();
   const url = clean(process.env.SUPABASE_URL);
   const anonKey = clean(process.env.SUPABASE_ANON_KEY);
 
