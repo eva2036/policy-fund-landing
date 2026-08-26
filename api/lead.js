@@ -26,12 +26,27 @@ async function sendNotificationEmail({ name, phone, source }) {
   return { skipped: false, ok: res.ok, status: res.status };
 }
 
-async function sendKakaoNotification({ name, phone, source }) {
-  const restApiKey = clean(process.env.KAKAO_REST_API_KEY);
-  const clientSecret = clean(process.env.KAKAO_CLIENT_SECRET);
-  const refreshToken = clean(process.env.KAKAO_REFRESH_TOKEN);
-  if (!restApiKey || !clientSecret || !refreshToken) return { skipped: true };
+async function getCachedKakaoToken(kvUrl, kvToken) {
+  if (!kvUrl || !kvToken) return null;
+  try {
+    const r = await fetch(`${kvUrl}/get/kakao_access_token`, {
+      headers: { Authorization: `Bearer ${kvToken}` },
+    });
+    const data = await r.json();
+    return data.result || null;
+  } catch (e) {
+    return null;
+  }
+}
 
+function cacheKakaoToken(kvUrl, kvToken, accessToken, ttlSeconds) {
+  if (!kvUrl || !kvToken) return;
+  fetch(`${kvUrl}/set/kakao_access_token/${encodeURIComponent(accessToken)}?EX=${ttlSeconds}`, {
+    headers: { Authorization: `Bearer ${kvToken}` },
+  }).catch(() => {});
+}
+
+async function refreshKakaoToken({ restApiKey, clientSecret, refreshToken }) {
   const tokenRes = await fetch("https://kauth.kakao.com/oauth/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -43,9 +58,18 @@ async function sendKakaoNotification({ name, phone, source }) {
     }),
   });
   const tokenData = await tokenRes.json();
-  if (!tokenRes.ok || !tokenData.access_token) {
-    return { ok: false, stage: "refresh", status: tokenRes.status };
-  }
+  if (!tokenRes.ok || !tokenData.access_token) return null;
+  return { accessToken: tokenData.access_token, expiresIn: tokenData.expires_in || 21599 };
+}
+
+async function sendKakaoNotification({ name, phone, source }) {
+  const restApiKey = clean(process.env.KAKAO_REST_API_KEY);
+  const clientSecret = clean(process.env.KAKAO_CLIENT_SECRET);
+  const refreshToken = clean(process.env.KAKAO_REFRESH_TOKEN);
+  if (!restApiKey || !clientSecret || !refreshToken) return { skipped: true };
+
+  const kvUrl = clean(process.env.KV_REST_API_URL);
+  const kvToken = clean(process.env.KV_REST_API_TOKEN);
 
   const templateObject = {
     object_type: "text",
@@ -56,15 +80,32 @@ async function sendKakaoNotification({ name, phone, source }) {
     },
   };
 
-  const sendRes = await fetch("https://kapi.kakao.com/v2/api/talk/memo/default/send", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${tokenData.access_token}`,
-      "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
-    },
-    body: new URLSearchParams({ template_object: JSON.stringify(templateObject) }),
-  });
-  return { ok: sendRes.ok, stage: "send", status: sendRes.status };
+  async function sendWith(accessToken) {
+    return fetch("https://kapi.kakao.com/v2/api/talk/memo/default/send", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+      },
+      body: new URLSearchParams({ template_object: JSON.stringify(templateObject) }),
+    });
+  }
+
+  let accessToken = await getCachedKakaoToken(kvUrl, kvToken);
+
+  if (accessToken) {
+    const sendRes = await sendWith(accessToken);
+    if (sendRes.ok) return { ok: true, stage: "send", status: sendRes.status, cached: true };
+    if (sendRes.status !== 401) return { ok: false, stage: "send", status: sendRes.status };
+    // cached token was rejected (expired/revoked) — fall through to refresh
+  }
+
+  const fresh = await refreshKakaoToken({ restApiKey, clientSecret, refreshToken });
+  if (!fresh) return { ok: false, stage: "refresh" };
+  cacheKakaoToken(kvUrl, kvToken, fresh.accessToken, Math.max(60, fresh.expiresIn - 300));
+
+  const sendRes = await sendWith(fresh.accessToken);
+  return { ok: sendRes.ok, stage: "send", status: sendRes.status, cached: false };
 }
 
 export default async function handler(req, res) {
