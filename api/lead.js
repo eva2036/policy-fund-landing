@@ -42,11 +42,9 @@ async function sendKakaoNotification({ name, phone, source }) {
       refresh_token: refreshToken,
     }),
   });
-  const tokenText = await tokenRes.text();
-  let tokenData;
-  try { tokenData = JSON.parse(tokenText); } catch (e) { tokenData = {}; }
+  const tokenData = await tokenRes.json();
   if (!tokenRes.ok || !tokenData.access_token) {
-    return { ok: false, stage: "refresh", status: tokenRes.status, body: tokenText };
+    return { ok: false, stage: "refresh", status: tokenRes.status };
   }
 
   const templateObject = {
@@ -66,8 +64,7 @@ async function sendKakaoNotification({ name, phone, source }) {
     },
     body: new URLSearchParams({ template_object: JSON.stringify(templateObject) }),
   });
-  const sendText = await sendRes.text();
-  return { ok: sendRes.ok, stage: "send", status: sendRes.status, body: sendText };
+  return { ok: sendRes.ok, stage: "send", status: sendRes.status };
 }
 
 export default async function handler(req, res) {
@@ -110,12 +107,6 @@ export default async function handler(req, res) {
 
     if (!insertRes.ok) {
       res.status(502).json({ error: "save failed" });
-      return;
-    }
-
-    if (req.query.debugKakao === "1") {
-      const kakaoResult = await sendKakaoNotification({ name, phone, source }).catch((e) => ({ error: String(e) }));
-      res.status(200).json({ ok: true, kakaoResult });
       return;
     }
 
