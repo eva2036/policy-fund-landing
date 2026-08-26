@@ -23,7 +23,8 @@ async function sendNotificationEmail({ name, phone, source }) {
       text: `새 상담 신청이 접수됐습니다.\n\n이름: ${name}\n연락처: ${phone}\n출처: ${source}\n접수 시각: ${new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
     }),
   });
-  return { skipped: false, ok: res.ok, status: res.status };
+  const text = await res.text();
+  return { skipped: false, ok: res.ok, status: res.status, body: text };
 }
 
 export default async function handler(req, res) {
@@ -66,6 +67,12 @@ export default async function handler(req, res) {
 
     if (!insertRes.ok) {
       res.status(502).json({ error: "save failed" });
+      return;
+    }
+
+    if (req.query.debugEmail === "1") {
+      const mailResult = await sendNotificationEmail({ name, phone, source }).catch((e) => ({ error: String(e) }));
+      res.status(200).json({ ok: true, mailResult });
       return;
     }
 
