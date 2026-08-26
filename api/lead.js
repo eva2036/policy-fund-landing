@@ -26,6 +26,47 @@ async function sendNotificationEmail({ name, phone, source }) {
   return { skipped: false, ok: res.ok, status: res.status };
 }
 
+async function sendKakaoNotification({ name, phone, source }) {
+  const restApiKey = clean(process.env.KAKAO_REST_API_KEY);
+  const clientSecret = clean(process.env.KAKAO_CLIENT_SECRET);
+  const refreshToken = clean(process.env.KAKAO_REFRESH_TOKEN);
+  if (!restApiKey || !clientSecret || !refreshToken) return { skipped: true };
+
+  const tokenRes = await fetch("https://kauth.kakao.com/oauth/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      client_id: restApiKey,
+      client_secret: clientSecret,
+      refresh_token: refreshToken,
+    }),
+  });
+  const tokenData = await tokenRes.json();
+  if (!tokenRes.ok || !tokenData.access_token) {
+    return { ok: false, stage: "refresh", status: tokenRes.status };
+  }
+
+  const templateObject = {
+    object_type: "text",
+    text: `[상담 신청]\n이름: ${name}\n연락처: ${phone}\n출처: ${source}\n접수 시각: ${new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
+    link: {
+      web_url: "https://kbgl-kr.vercel.app/",
+      mobile_web_url: "https://kbgl-kr.vercel.app/",
+    },
+  };
+
+  const sendRes = await fetch("https://kapi.kakao.com/v2/api/talk/memo/default/send", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${tokenData.access_token}`,
+      "Content-Type": "application/x-www-form-urlencoded;charset=utf-8",
+    },
+    body: new URLSearchParams({ template_object: JSON.stringify(templateObject) }),
+  });
+  return { ok: sendRes.ok, stage: "send", status: sendRes.status };
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
   if (req.method !== "POST") {
@@ -70,6 +111,7 @@ export default async function handler(req, res) {
     }
 
     sendNotificationEmail({ name, phone, source }).catch(() => {});
+    sendKakaoNotification({ name, phone, source }).catch(() => {});
 
     res.status(200).json({ ok: true });
   } catch (e) {
