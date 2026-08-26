@@ -115,7 +115,120 @@
   .promise-item b { display: block; font-size: 16.5px; margin-bottom: 4px; }
   .promise-item span { font-size: 14px; color: var(--ink-soft); }
 
-  footer { padding: 32px 0 40px; text-align: center; font-size: 12px; color: var(--ink-faint); }
+  footer { padding: 32px 0 40px; text-align: center; font-size: 12px; color: var(--ink-faint); line-height: 1.8; }
+  footer .disclaimer { margin-top: 10px; }
+
+  /* ---- Inline CTA button (opens modal, used inside sections) ---- */
+  .inline-cta {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--accent); color: var(--on-accent); font-weight: 800; font-size: 15px;
+    padding: 14px 20px; border-radius: 12px; border: none; width: 100%; cursor: pointer;
+    font-family: inherit; text-align: center;
+  }
+
+  /* ---- Notice box ---- */
+  .notice {
+    background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+    border-radius: 4px 14px 14px 4px; padding: 20px 24px; box-shadow: var(--shadow);
+  }
+  .notice-title { font-family: ui-monospace, Consolas, monospace; font-size: 11.5px; letter-spacing: .1em; color: var(--accent); font-weight: 700; margin-bottom: 10px; }
+  .notice p { margin: 0 0 10px; font-size: 14.5px; color: var(--ink-soft); line-height: 1.7; }
+  .notice p:last-child { margin-bottom: 0; }
+  .notice b { color: var(--ink); }
+
+  /* ---- Pain points ---- */
+  .pain-list { display: flex; flex-direction: column; gap: 14px; }
+  .pain-item {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 18px 20px; display: flex; gap: 14px; align-items: flex-start; box-shadow: var(--shadow);
+  }
+  .pain-item .mark { font-size: 24px; flex-shrink: 0; line-height: 1.3; }
+  .pain-item p { margin: 0; font-size: 14.5px; color: var(--ink-soft); }
+  .pain-item b { color: var(--ink); }
+
+  /* ---- Diagnosis section ---- */
+  .diag-steps { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .diag-step {
+    display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 12px; padding: 14px 18px; box-shadow: var(--shadow);
+  }
+  .diag-step .n {
+    width: 30px; height: 30px; border-radius: 50%; background: var(--ink); color: var(--paper);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex-shrink: 0;
+    font-family: ui-monospace, Consolas, monospace;
+  }
+  .diag-step .t { font-weight: 700; font-size: 14.5px; }
+  .diag-step .d { font-size: 12.5px; color: var(--ink-faint); }
+  .diag-give { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; box-shadow: var(--shadow); }
+  .diag-give-title { font-weight: 800; font-size: 15px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .diag-give ul { list-style: none; margin: 0 0 20px; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  .diag-give li { display: flex; gap: 9px; font-size: 14.5px; color: var(--ink-soft); }
+  .diag-give .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+
+  /* ---- Statement block (dark contrast, reuses modal's dark palette) ---- */
+  .statement {
+    background: linear-gradient(155deg, #0c1220 0%, #131a2c 55%, #0c1220 100%);
+    color: #f1f3fb; padding: 52px 0; border-top: 1px solid var(--line);
+  }
+  .statement .eyebrow { color: #9fb0e0; }
+  .statement h2 { color: #f1f3fb; }
+  .statement-lines { text-align: center; margin: 0 0 28px; }
+  .statement-lines p { font-size: 18px; font-weight: 800; margin: 0 0 6px; line-height: 1.5; text-wrap: balance; }
+  .statement-lines .dim { color: #9fb0e0; font-weight: 600; font-size: 13.5px; }
+  .statement-lines .pop { color: #6f96ff; }
+  .statement-checks { display: flex; flex-direction: column; gap: 12px; max-width: 440px; margin: 0 auto; }
+  .statement-checks li {
+    list-style: none; display: flex; gap: 10px; font-size: 14px;
+    background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15);
+    border-radius: 10px; padding: 12px 16px;
+  }
+  .statement-checks .c { color: #ffd23f; font-weight: 800; flex-shrink: 0; }
+
+  /* ---- Service flow ---- */
+  .flow-list { display: flex; flex-direction: column; gap: 0; }
+  .flow-item { display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 18px 0; }
+  .flow-item:not(:last-child) { border-bottom: 1px dashed var(--line); }
+  .flow-num {
+    width: 40px; height: 40px; border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-weight: 800; font-family: ui-monospace, Consolas, monospace;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .flow-title { font-weight: 700; font-size: 15.5px; margin-bottom: 3px; }
+  .flow-desc { font-size: 13.5px; color: var(--ink-soft); }
+  .prep-box {
+    background: var(--paper-raise); border: 1px dashed var(--line); border-radius: 12px;
+    padding: 16px 20px; font-size: 13px; color: var(--ink-soft); margin-top: 16px;
+  }
+  .prep-box b { color: var(--ink); }
+
+  /* ---- Trust grid ---- */
+  .trust-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .trust-item {
+    background: var(--card); border: 1px solid var(--line); border-left: 3px solid var(--ink);
+    border-radius: 10px; padding: 16px 20px; font-size: 14px;
+  }
+  .trust-item b { display: block; font-size: 15px; margin-bottom: 5px; }
+  .trust-item span { color: var(--ink-soft); font-size: 13.5px; }
+
+  /* ---- Eligibility checklist ---- */
+  .check-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+  .check-list li {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 14.5px;
+    background: var(--paper-raise); border: 1px solid var(--line); border-radius: 10px; padding: 14px 18px;
+  }
+  .check-list .c { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+
+  /* ---- FAQ ---- */
+  .faq-item { border-bottom: 1px solid var(--line); padding: 22px 0; }
+  .faq-item:first-child { padding-top: 0; }
+  .faq-q { font-weight: 700; font-size: 15.5px; margin-bottom: 10px; display: flex; gap: 10px; }
+  .faq-q .qmark { color: var(--accent); flex-shrink: 0; }
+  .faq-a { font-size: 13.5px; color: var(--ink-soft); padding-left: 24px; line-height: 1.7; }
+
+  /* ---- Final CTA section ---- */
+  .final-cta-section { text-align: center; padding: 52px 0 64px; }
+  .final-cta-section p { color: var(--ink-soft); font-size: 14px; margin: 0 0 26px; }
+  .final-cta-section .inline-cta { max-width: 340px; margin: 0 auto; }
 
   /* ---- Lead capture modal / bottom sheet ---- */
   .modal-overlay {
@@ -260,6 +373,51 @@
   </div>
 </div>
 
+<section style="padding-top:32px;">
+  <div class="wrap">
+    <div class="notice">
+      <div class="notice-title">🔔 NOTICE</div>
+      <p><b>저는 보험을 팔지 않는, 정책자금 상담만 하는 사람입니다.</b></p>
+      <p>정책자금을 이유로 보험이나 다른 금융상품을 권해드리지 않습니다. 신용보증기금·기술보증기금·중소벤처기업진흥공단 등 정부 정책자금 상담에만 집중하고 있어요.</p>
+      <p>궁금하신 점은 언제든 편하게 상담 신청으로 먼저 물어봐 주세요.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">이런 고민, 있으시죠</div>
+    <h2>😥 사장님만 그런 게 아니에요</h2>
+    <div class="pain-list">
+      <div class="pain-item"><span class="mark">😮‍💨</span><p><b>정책자금이 있는 줄도 몰랐어요.</b><br>은행에서 대출이 안 된다고 하면 그냥 포기하게 되죠.</p></div>
+      <div class="pain-item"><span class="mark">📄</span><p><b>서류만 봐도 머리가 아파요.</b><br>사업계획서 하나 준비하는 데 반나절이 훌쩍 갑니다.</p></div>
+      <div class="pain-item"><span class="mark">⏰</span><p><b>가게 문 열어야 하는데 언제 알아보나요.</b><br>결국 급한 대로 카드론부터 쓰게 되는 경우가 많아요.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--paper-raise);">
+  <div class="wrap">
+    <div class="eyebrow">FREE DIAGNOSIS</div>
+    <h2>🔍 우리 가게, 정책자금 받을 수 있을까요?</h2>
+    <div class="diag-steps">
+      <div class="diag-step"><div class="n">1</div><div><div class="t">상담 신청으로 간단히 문의</div><div class="d">업종·매출·연차만 알려주셔도 충분해요</div></div></div>
+      <div class="diag-step"><div class="n">2</div><div><div class="t">제가 직접 확인</div><div class="d">지금 가능한 정책자금이 있는지 살펴봅니다</div></div></div>
+      <div class="diag-step"><div class="n">3</div><div><div class="t">결과 안내</div><div class="d">가능성과 다음 단계를 정리해서 알려드려요</div></div></div>
+    </div>
+    <div class="diag-give">
+      <div class="diag-give-title">🎁 이런 내용을 받아보세요</div>
+      <ul>
+        <li><span class="c">✓</span>지금 상황에서 확인 가능한 정책자금 목록</li>
+        <li><span class="c">✓</span>기관별 조건과 대략적인 가능성</li>
+        <li><span class="c">✓</span>준비하면 좋은 서류 안내</li>
+        <li><span class="c">✓</span>혼자 진행할지, 도움을 받을지 판단할 수 있는 정보</li>
+      </ul>
+      <button class="inline-cta" type="button" data-open-modal>무료로 확인해보기</button>
+    </div>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
     <div class="eyebrow">Our Promise</div>
@@ -267,14 +425,90 @@
     <div class="promise-list">
       <div class="promise-item"><div class="num">01</div><div><b>진행 전 비용 100% 사전 안내</b><span>계약서에 명시된 금액 외에는 청구하지 않습니다.</span></div></div>
       <div class="promise-item"><div class="num">02</div><div><b>불가능한 케이스는 솔직히 말씀드립니다</b><span>가능성이 낮은 건은 억지로 진행하지 않고 그 이유를 설명해드립니다.</span></div></div>
-      <div class="promise-item"><div class="num">03</div><div><b>진행 상황 실시간 공유</b><span>카톡방을 통해 서류 접수부터 결과까지 투명하게 안내합니다.</span></div></div>
+      <div class="promise-item"><div class="num">03</div><div><b>진행 상황 실시간 공유</b><span>서류 접수부터 결과까지 투명하게 안내합니다.</span></div></div>
     </div>
   </div>
 </section>
 
+<div class="statement">
+  <div class="wrap">
+    <div class="eyebrow">🙋 먼저 말씀드릴게요</div>
+    <div class="statement-lines">
+      <p>전화로 먼저 영업하는 곳,<br>일단 한번 의심해보세요.</p>
+      <p class="pop">여기는 <span class="mono" style="font-weight:900;">한국사업자성장연구소</span>가 직접 상담합니다.</p>
+      <p class="dim">중간에 다른 상담원 거치지 않아요.</p>
+    </div>
+    <ul class="statement-checks">
+      <li><span class="c">✓</span>먼저 전화 걸어서 영업하지 않습니다 — 사장님이 먼저 문의주실 때만 시작해요</li>
+      <li><span class="c">✓</span>"100% 승인", "정부 지정 업체" 같은 말 쓰지 않습니다</li>
+      <li><span class="c">✓</span>정책자금을 이유로 보험이나 다른 상품을 끼워팔지 않습니다</li>
+      <li><span class="c">✓</span>질문하신 내용, 상담원 아닌 제가 직접 확인하고 답합니다</li>
+    </ul>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">이렇게 도와드려요</div>
+    <h2>📋 진행은 이렇게 간단합니다</h2>
+    <div class="flow-list">
+      <div class="flow-item"><div class="flow-num">1</div><div><div class="flow-title">상담 신청으로 편하게 문의</div><div class="flow-desc">사업 현황을 간단히 말씀해주시면 됩니다. 어려운 용어 몰라도 괜찮아요.</div></div></div>
+      <div class="flow-item"><div class="flow-num">2</div><div><div class="flow-title">무료로 상황 진단</div><div class="flow-desc">지금 받으실 수 있는 자금이 있는지 먼저 확인해드립니다.</div></div></div>
+      <div class="flow-item"><div class="flow-num">3</div><div><div class="flow-title">맞는 자금 안내</div><div class="flow-desc">가능한 자금과 예상 조건을 정리해서 보여드려요. 결정은 사장님 몫입니다.</div></div></div>
+      <div class="flow-item"><div class="flow-num">4</div><div><div class="flow-title">서류 준비 도움</div><div class="flow-desc">진행을 원하시면 서류 작성부터 제출까지 같이 챙겨드립니다.</div></div></div>
+    </div>
+    <div class="prep-box"><b>신청하실 때 이 3가지만 알려주시면 더 빨리 확인해드려요:</b> ① 업종 ② 대략적인 연매출 ③ 창업/운영 연차. 모르셔도 괜찮아요, 상담하면서 같이 확인하면 됩니다.</div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">먼저 약속드려요</div>
+    <h2>🚫 이런 말은 안 합니다</h2>
+    <div class="trust-grid">
+      <div class="trust-item"><b>"100% 승인" 이란 말 안 씁니다</b><span>기관 심사는 저희가 보장할 수 없는 영역이에요. 가능성을 정직하게 말씀드립니다.</span></div>
+      <div class="trust-item"><b>계약은 항상 서면으로</b><span>구두 약속으로 진행하지 않습니다. 진행 전 계약 내용을 문서로 확인하실 수 있어요.</span></div>
+      <div class="trust-item"><b>비용은 미리, 명확하게</b><span>수수료는 상담 단계에서 먼저 안내드리고, 놀랄 일 없이 진행합니다.</span></div>
+      <div class="trust-item"><b>다른 상품 끼워팔지 않습니다</b><span>정책자금을 이유로 보험·다른 금융상품을 권하지 않습니다.</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">이런 분이라면</div>
+    <h2>✅ 한번 확인해보시면 좋아요</h2>
+    <ul class="check-list">
+      <li><span class="c">✓</span>매출 규모와 상관없이, 사업자등록이 되어 있다면 확인해볼 자금이 있을 수 있어요</li>
+      <li><span class="c">✓</span>창업 초기든, 7년 이상 운영 중이든 조건에 맞는 자금이 다를 뿐 방법은 있습니다</li>
+      <li><span class="c">✓</span>대출을 이미 받아본 적 있어도, 추가로 가능한 자금이 있는지 다시 확인할 수 있어요</li>
+      <li><span class="c">✓</span>"이런 것도 되나요?" 싶은 것도 일단 편하게 물어보셔도 괜찮습니다</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="eyebrow">자주 묻는 질문</div>
+    <h2>💬 궁금하신 점, 미리 답해드릴게요</h2>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">💰</span>비용은 얼마인가요?</div><div class="faq-a">상담과 진단은 무료입니다. 실제 진행을 원하실 경우의 비용은 첫 상담에서 바로 안내드리며, 사업 진행 전에는 청구되지 않습니다.</div></div>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">🤔</span>사기 아닌가요? 요즘 이런 광고 많던데요.</div><div class="faq-a">맞습니다, 걱정하실 만해요. 그래서 저희는 "100% 승인" 같은 말을 쓰지 않고, 계약은 항상 서면으로, 비용은 사전에 명확히 안내해드립니다. 부담 없이 질문만 먼저 해보셔도 됩니다.</div></div>
+    <div class="faq-item"><div class="faq-q"><span class="qmark">🚪</span>꼭 자금을 받아야만 하나요?</div><div class="faq-a">아니요. 진단 후 조건이 안 맞거나 원치 않으시면 언제든 그만두실 수 있습니다. 억지로 진행하지 않아요.</div></div>
+  </div>
+</section>
+
+<div class="final-cta-section">
+  <div class="wrap">
+    <h2>지금 바로, 부담 없이 물어보세요</h2>
+    <p>1분이면 상담 신청이 접수됩니다. 결정은 그다음에 천천히 하셔도 괜찮아요.</p>
+    <button class="inline-cta" type="button" data-open-modal>상담 신청하기</button>
+  </div>
+</div>
+
 <footer>
   <div class="wrap">
-    초안 v2 · 참고 사이트의 "볼드 타이포 + 인물사진 + 하단 고정 CTA" 구조만 차용, 문구·수치는 전부 자리표시자입니다.
+    <div class="biz-name" style="font-weight:700;color:var(--ink-soft);">한국사업자성장연구소</div>
+    <div class="disclaimer">본 페이지는 정보 제공을 목적으로 하며, 정책자금 승인 여부는 운영기관의 심사 결과에 따릅니다.<br>상담 내용은 실제 진행 전까지 비용이 발생하지 않습니다.</div>
   </div>
 </footer>
 
@@ -430,6 +664,56 @@
     }
   });
 })();
+</script>
+
+<script>
+  // 스크롤 깊이 / 체류시간 / 유입경로 추적 (자체 통계, 본인만 확인 가능 — 개인식별정보 미수집)
+  (function () {
+    var maxScroll = 0;
+    var startTime = Date.now();
+    var sent = false;
+    var urlParams = new URLSearchParams(location.search);
+
+    function scrollPercent() {
+      var doc = document.documentElement;
+      var scrollTop = window.scrollY || doc.scrollTop;
+      var scrollable = doc.scrollHeight - doc.clientHeight;
+      if (scrollable <= 0) return 100;
+      return Math.min(100, Math.round((scrollTop / scrollable) * 100));
+    }
+
+    window.addEventListener("scroll", function () {
+      var pct = scrollPercent();
+      if (pct > maxScroll) maxScroll = pct;
+    }, { passive: true });
+
+    function sendTracking() {
+      if (sent) return;
+      sent = true;
+      var dwell = Math.round((Date.now() - startTime) / 1000);
+      var payload = JSON.stringify({
+        maxScroll: maxScroll,
+        dwell: dwell,
+        startAt: startTime,
+        ref: document.referrer || "",
+        utmSource: urlParams.get("utm_source") || "",
+        utmCampaign: urlParams.get("utm_campaign") || "",
+        screenW: window.screen ? window.screen.width : 0,
+        screenH: window.screen ? window.screen.height : 0,
+        lang: navigator.language || "",
+      });
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/track", new Blob([payload], { type: "application/json" }));
+      } else {
+        fetch("/api/track", { method: "POST", body: payload, keepalive: true });
+      }
+    }
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.visibilityState === "hidden") sendTracking();
+    });
+    window.addEventListener("pagehide", sendTracking);
+  })();
 </script>
 
 </body>
