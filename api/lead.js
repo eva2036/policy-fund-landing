@@ -110,8 +110,10 @@ export default async function handler(req, res) {
       return;
     }
 
-    sendNotificationEmail({ name, phone, source }).catch(() => {});
-    sendKakaoNotification({ name, phone, source }).catch(() => {});
+    await Promise.allSettled([
+      sendNotificationEmail({ name, phone, source }),
+      sendKakaoNotification({ name, phone, source }),
+    ]);
 
     res.status(200).json({ ok: true });
   } catch (e) {
