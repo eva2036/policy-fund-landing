@@ -2,6 +2,10 @@
   "crons": [
     {
       "path": "/api/threads-publish",
+      "schedule": "0 0 29 8 *"
+    },
+    {
+      "path": "/api/threads-publish",
       "schedule": "0 0 30 8 *"
     },
     {
