@@ -2,7 +2,7 @@ const clean = (v) => (v || "").replace(/^﻿/, "").trim();
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
-  const secret = clean(process.env.STATS_SECRET);
+  const secret = clean(process.env.SETUP_SECRET);
   if (!secret || req.query.key !== secret) {
     res.status(401).json({ error: "unauthorized" });
     return;
