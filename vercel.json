@@ -1,5 +1,9 @@
 {
   "crons": [
-    { "path": "/api/threads-publish", "schedule": "0 0 * * *" }
+    { "path": "/api/threads-publish", "schedule": "0 0 * * *" },
+    { "path": "/api/threads-publish", "schedule": "0 3 * * *" },
+    { "path": "/api/threads-publish", "schedule": "0 6 * * *" },
+    { "path": "/api/threads-publish", "schedule": "0 9 * * *" },
+    { "path": "/api/threads-publish", "schedule": "0 12 * * *" }
   ]
 }
