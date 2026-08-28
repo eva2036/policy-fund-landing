@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/threads-publish", "schedule": "0 0 * * *" }
+  ]
+}
