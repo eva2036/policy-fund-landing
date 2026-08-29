@@ -1,3 +1,5 @@
+export const config = { maxDuration: 30 };
+
 const clean = (v) => (v || "").replace(/^﻿/, "").trim();
 
 async function getThreadsAuth(kvUrl, kvToken) {
@@ -102,7 +104,15 @@ export default async function handler(req, res) {
       }
     }
 
-    const result = await publishToThreads(userId, accessToken, post.content);
+    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    let result = await publishToThreads(userId, accessToken, post.content);
+    let attempts = 1;
+    while (!result.ok && attempts < 3) {
+      await sleep(2000);
+      result = await publishToThreads(userId, accessToken, post.content);
+      attempts += 1;
+    }
 
     const patchHeaders = {
       apikey: anonKey,
@@ -121,14 +131,14 @@ export default async function handler(req, res) {
           thread_post_id: result.threadPostId,
         }),
       });
-      res.status(200).json({ ok: true, published: post.id, threadPostId: result.threadPostId });
+      res.status(200).json({ ok: true, published: post.id, threadPostId: result.threadPostId, attempts });
     } else {
       await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${post.id}`, {
         method: "PATCH",
         headers: patchHeaders,
         body: JSON.stringify({ status: "failed" }),
       });
-      res.status(502).json({ ok: false, failed: post.id, result });
+      res.status(502).json({ ok: false, failed: post.id, result, attempts });
     }
   } catch (e) {
     res.status(500).json({ error: "server error", detail: String(e) });
