@@ -4,36 +4,12 @@ const clean = (v) => (v || "").replace(/^﻿/, "").trim();
 
 async function getThreadsAuth(kvUrl, kvToken) {
   const auth = { Authorization: `Bearer ${kvToken}` };
-  const [tokenRes, userIdRes, expiresAtRes] = await Promise.all([
+  const [tokenRes, userIdRes] = await Promise.all([
     fetch(`${kvUrl}/get/threads_access_token`, { headers: auth }),
     fetch(`${kvUrl}/get/threads_user_id`, { headers: auth }),
-    fetch(`${kvUrl}/get/threads_expires_at`, { headers: auth }),
   ]);
-  const [tokenData, userIdData, expiresAtData] = await Promise.all([
-    tokenRes.json(), userIdRes.json(), expiresAtRes.json(),
-  ]);
-  return {
-    accessToken: tokenData.result || null,
-    userId: userIdData.result || null,
-    expiresAt: expiresAtData.result ? parseInt(expiresAtData.result, 10) : 0,
-  };
-}
-
-function saveThreadsAuth(kvUrl, kvToken, accessToken, expiresAt) {
-  const auth = { Authorization: `Bearer ${kvToken}` };
-  return Promise.all([
-    fetch(`${kvUrl}/set/threads_access_token/${encodeURIComponent(accessToken)}`, { headers: auth }),
-    fetch(`${kvUrl}/set/threads_expires_at/${expiresAt}`, { headers: auth }),
-  ]);
-}
-
-async function refreshThreadsToken(accessToken) {
-  const r = await fetch(
-    `https://graph.threads.net/refresh_access_token?grant_type=th_refresh_token&access_token=${encodeURIComponent(accessToken)}`
-  );
-  const data = await r.json();
-  if (!r.ok || !data.access_token) return null;
-  return { accessToken: data.access_token, expiresIn: data.expires_in || 5184000 };
+  const [tokenData, userIdData] = await Promise.all([tokenRes.json(), userIdRes.json()]);
+  return { accessToken: tokenData.result || null, userId: userIdData.result || null };
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -57,23 +33,17 @@ async function publishToThreads(userId, accessToken, text) {
     { method: "POST", headers: { Authorization: `Bearer ${accessToken}` } }
   );
   const createData = await createRes.json();
-  if (!createRes.ok || !createData.id) {
-    return { ok: false, stage: "create", detail: createData };
-  }
+  if (!createRes.ok || !createData.id) return { ok: false, stage: "create", detail: createData };
 
   const readiness = await waitForContainerReady(createData.id, accessToken);
-  if (!readiness.ready) {
-    return { ok: false, stage: "container_wait", detail: readiness.detail };
-  }
+  if (!readiness.ready) return { ok: false, stage: "container_wait", detail: readiness.detail };
 
   const publishRes = await fetch(
     `https://graph.threads.net/v1.0/${userId}/threads_publish?creation_id=${createData.id}`,
     { method: "POST", headers: { Authorization: `Bearer ${accessToken}` } }
   );
   const publishData = await publishRes.json();
-  if (!publishRes.ok || !publishData.id) {
-    return { ok: false, stage: "publish", detail: publishData };
-  }
+  if (!publishRes.ok || !publishData.id) return { ok: false, stage: "publish", detail: publishData };
 
   return { ok: true, threadPostId: publishData.id };
 }
@@ -91,12 +61,17 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
 
   const cronSecret = clean(process.env.CRON_SECRET);
-  if (cronSecret) {
-    const authHeader = req.headers.authorization || "";
-    if (authHeader !== `Bearer ${cronSecret}`) {
-      res.status(401).json({ error: "unauthorized" });
-      return;
-    }
+  const authHeader = req.headers.authorization || "";
+  const queryKey = clean(req.query.key);
+  if (cronSecret && authHeader !== `Bearer ${cronSecret}` && queryKey !== cronSecret) {
+    res.status(401).json({ error: "unauthorized" });
+    return;
+  }
+
+  const id = clean(req.query.id);
+  if (!id) {
+    res.status(400).json({ error: "missing id" });
+    return;
   }
 
   const supabaseUrl = clean(process.env.SUPABASE_URL);
@@ -105,43 +80,27 @@ export default async function handler(req, res) {
   const kvToken = clean(process.env.KV_REST_API_TOKEN);
 
   try {
-    const listRes = await fetch(
-      `${supabaseUrl}/rest/v1/thread_posts?status=eq.pending&order=created_at.asc&limit=1`,
-      { headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` } }
-    );
-    const rows = await listRes.json();
-    if (!listRes.ok || !Array.isArray(rows) || rows.length === 0) {
-      res.status(200).json({ ok: true, skipped: true, reason: "no pending posts" });
+    const getRes = await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${id}&select=id,content,status`, {
+      headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` },
+    });
+    const rows = await getRes.json();
+    if (!getRes.ok || !rows.length) {
+      res.status(404).json({ error: "post not found" });
+      return;
+    }
+    const post = rows[0];
+    if (post.status === "published") {
+      res.status(409).json({ error: "already published" });
       return;
     }
 
-    const post = rows[0];
-
-    let { accessToken, userId, expiresAt } = await getThreadsAuth(kvUrl, kvToken);
+    const { accessToken, userId } = await getThreadsAuth(kvUrl, kvToken);
     if (!accessToken || !userId) {
       res.status(500).json({ error: "threads auth not configured" });
       return;
     }
 
-    const fiveDaysMs = 5 * 24 * 3600 * 1000;
-    if (expiresAt && expiresAt - Date.now() < fiveDaysMs) {
-      const refreshed = await refreshThreadsToken(accessToken);
-      if (refreshed) {
-        accessToken = refreshed.accessToken;
-        const newExpiresAt = Date.now() + refreshed.expiresIn * 1000;
-        await saveThreadsAuth(kvUrl, kvToken, accessToken, newExpiresAt);
-      }
-    }
-
-    const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-    let result = await publishToThreads(userId, accessToken, post.content);
-    let attempts = 1;
-    while (!result.ok && attempts < 3) {
-      await sleep(2000);
-      result = await publishToThreads(userId, accessToken, post.content);
-      attempts += 1;
-    }
+    const result = await publishToThreads(userId, accessToken, post.content);
 
     const patchHeaders = {
       apikey: anonKey,
@@ -151,7 +110,7 @@ export default async function handler(req, res) {
     };
 
     if (result.ok) {
-      await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${post.id}`, {
+      await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${id}`, {
         method: "PATCH",
         headers: patchHeaders,
         body: JSON.stringify({
@@ -160,23 +119,23 @@ export default async function handler(req, res) {
           thread_post_id: result.threadPostId,
         }),
       });
-      res.status(200).json({ ok: true, published: post.id, threadPostId: result.threadPostId, attempts });
+      res.status(200).json({ ok: true, published: id, threadPostId: result.threadPostId });
     } else {
       const failReason = summarizeFailure(result);
-      console.error("threads publish failed", post.id, failReason);
-      const withReason = await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${post.id}`, {
+      console.error("threads publish failed", id, failReason);
+      const withReason = await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${id}`, {
         method: "PATCH",
         headers: patchHeaders,
         body: JSON.stringify({ status: "failed", fail_reason: failReason }),
       });
       if (!withReason.ok) {
-        await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${post.id}`, {
+        await fetch(`${supabaseUrl}/rest/v1/thread_posts?id=eq.${id}`, {
           method: "PATCH",
           headers: patchHeaders,
           body: JSON.stringify({ status: "failed" }),
         });
       }
-      res.status(502).json({ ok: false, failed: post.id, result, attempts, failReason });
+      res.status(502).json({ ok: false, failed: id, result, failReason });
     }
   } catch (e) {
     res.status(500).json({ error: "server error", detail: String(e) });
